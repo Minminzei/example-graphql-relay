@@ -3,27 +3,54 @@
  * https://reactnavigation.org/docs/getting-started
  *
  */
-import { FontAwesome } from '@expo/vector-icons';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import * as React from 'react';
-import { ColorSchemeName, Pressable } from 'react-native';
+import Icon from "@expo/vector-icons/MaterialCommunityIcons";
+import {
+  createBottomTabNavigator,
+  BottomTabBarProps,
+} from "@react-navigation/bottom-tabs";
+import {
+  createMaterialTopTabNavigator,
+  MaterialTopTabBarProps,
+} from "@react-navigation/material-top-tabs";
+import {
+  NavigationContainer,
+  DefaultTheme,
+  DarkTheme,
+} from "@react-navigation/native";
+import Ripple from "react-native-material-ripple";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import * as React from "react";
+import { ColorSchemeName, StyleSheet } from "react-native";
+import { View, Text } from "@components/atoms/Themed";
+import Colors from "@constants/Colors";
+import Icons from "@constants/Icons";
+import ChatsScreen from "@screens/ChatsScreen";
+import ChatScreen from "@screens/ChatScreen";
+import ChatCreateScreen from "@screens/ChatCreateScreen";
+import UserScreen from "@screens/UserScreen";
+import ProfileUserScreen from "@screens/ProfileUserScreen";
+import ProfileChatsScreen from "@screens/ProfileChatsScreen";
+import {
+  RootStackParamList,
+  RootTabParamList,
+  initialRouteName,
+  ProfileTabParamList,
+  RootTabScreenProps,
+} from "@navigation/types";
+import LinkingConfiguration from "@navigation/LinkingConfiguration";
+import { navigationRef } from "@navigation/navigator";
 
-import Colors from '../constants/Colors';
-import useColorScheme from '../hooks/useColorScheme';
-import ModalScreen from '../screens/ModalScreen';
-import NotFoundScreen from '../screens/NotFoundScreen';
-import TabOneScreen from '../screens/TabOneScreen';
-import TabTwoScreen from '../screens/TabTwoScreen';
-import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
-import LinkingConfiguration from './LinkingConfiguration';
-
-export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
+export default function Navigation({
+  colorScheme,
+}: {
+  colorScheme: ColorSchemeName;
+}) {
   return (
     <NavigationContainer
+      ref={navigationRef}
       linking={LinkingConfiguration}
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+    >
       <RootNavigator />
     </NavigationContainer>
   );
@@ -37,12 +64,33 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   return (
-    <Stack.Navigator>
-      <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
-      <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
-      <Stack.Group screenOptions={{ presentation: 'modal' }}>
-        <Stack.Screen name="Modal" component={ModalScreen} />
-      </Stack.Group>
+    <Stack.Navigator initialRouteName={initialRouteName}>
+      <Stack.Screen
+        name="Root"
+        component={BottomTabNavigator}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="User"
+        component={UserScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Chat"
+        component={ChatScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="ChatCreate"
+        component={ChatCreateScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
   );
 }
@@ -54,54 +102,158 @@ function RootNavigator() {
 const BottomTab = createBottomTabNavigator<RootTabParamList>();
 
 function BottomTabNavigator() {
-  const colorScheme = useColorScheme();
-
   return (
-    <BottomTab.Navigator
-      initialRouteName="TabOne"
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
-      }}>
+    <BottomTab.Navigator initialRouteName="Chats" tabBar={TabBar}>
       <BottomTab.Screen
-        name="TabOne"
-        component={TabOneScreen}
-        options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Pressable
-              onPress={() => navigation.navigate('Modal')}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-              })}>
-              <FontAwesome
-                name="info-circle"
-                size={25}
-                color={Colors[colorScheme].text}
-                style={{ marginRight: 15 }}
-              />
-            </Pressable>
-          ),
-        })}
+        name="Chats"
+        component={ChatsScreen}
+        options={{
+          tabBarLabel: Icons.home,
+          headerShown: false,
+          title: "チャット",
+        }}
       />
       <BottomTab.Screen
-        name="TabTwo"
-        component={TabTwoScreen}
+        name="Profile"
+        component={ProfileTabNavigator}
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          tabBarLabel: Icons.prfofile,
+          headerShown: false,
+          title: "プロフィール",
         }}
       />
     </BottomTab.Navigator>
   );
 }
 
-/**
- * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
- */
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) {
-  return <FontAwesome size={30} style={{ marginBottom: -3 }} {...props} />;
+const ProfileTab = createMaterialTopTabNavigator<ProfileTabParamList>();
+
+function ProfileTabNavigator(data: RootTabScreenProps<"Profile">) {
+  return (
+    <ProfileTab.Navigator
+      // tabBar={TodoTabBar}
+      initialRouteName="User"
+      screenOptions={{
+        tabBarActiveTintColor: Colors.blue,
+        tabBarInactiveTintColor: Colors.gray,
+      }}
+    >
+      <ProfileTab.Screen
+        name="User"
+        component={ProfileUserScreen}
+        options={{
+          title: "プロフィール編集",
+        }}
+      />
+      <ProfileTab.Screen
+        name="Chat"
+        component={ProfileChatsScreen}
+        options={{
+          title: "チャット",
+        }}
+      />
+    </ProfileTab.Navigator>
+  );
 }
+
+// function TodoTabBar(params: MaterialTopTabBarProps) {
+//   const { state, descriptors, navigation } = params;
+//   return (
+//     <View style={styles.favoriteTabBarViews}>
+//       {state.routes.map((route, index) => {
+//         const { options } = descriptors[route.key];
+//         const isFocused = state.index === index;
+
+//         return (
+//           <Ripple
+//             onPress={() => navigation.navigate(route.name)}
+//             style={[
+//               styles.favoriteTabBarView,
+//               isFocused
+//                 ? {
+//                     borderColor: Colors.black0,
+//                     borderBottomColor: Colors.green,
+//                     borderWidth: 2,
+//                   }
+//                 : null,
+//             ]}
+//             key={`tabbr-${index}`}
+//           >
+//             <Text
+//               style={[
+//                 styles.favoriteTabBarText,
+//                 isFocused
+//                   ? {
+//                       ...Fonts.xlb100,
+//                       color: Colors.green,
+//                     }
+//                   : null,
+//               ]}
+//             >
+//               {options.title}
+//             </Text>
+//           </Ripple>
+//         );
+//       })}
+//     </View>
+//   );
+// }
+
+function TabBar(params: BottomTabBarProps): JSX.Element {
+  const { state, descriptors, navigation } = params;
+  return (
+    <View style={styles.menus}>
+      {state.routes.map((route, index) => {
+        const { options } = descriptors[route.key];
+        const isFocused = state.index === index;
+        return (
+          <Ripple
+            style={styles.menu}
+            onPress={() => navigation.navigate("Root", { screen: route.name })}
+            key={`menu-${route.name}`}
+          >
+            <Icon
+              name={options.tabBarLabel as any}
+              size={40}
+              color={isFocused ? Colors.primary : Colors.black}
+            />
+            <Text
+              style={[
+                styles.label,
+                isFocused ? { color: Colors.primary } : null,
+              ]}
+            >
+              {options.title}
+            </Text>
+          </Ripple>
+        );
+      })}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  menus: {
+    height: 74,
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.white,
+    borderTopWidth: 1,
+    borderColor: Colors.grayLight,
+    borderStyle: "solid",
+  },
+  menu: {
+    flex: 1,
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  label: {
+    color: Colors.black,
+    fontSize: 10,
+    lineHeight: 10,
+    marginTop: 4,
+  },
+});

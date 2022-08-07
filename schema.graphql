@@ -1,0 +1,99 @@
+type Query {
+  user(id: ID!): User!
+  chat(id: ID!): Chat!
+  chats(user_id: ID): [Chat!]!
+  viewer: User!
+  myChats(user_id: ID): [Chat!]!
+}
+
+type User {
+  id: ID!
+  name: String!
+  image: String!
+  email: String!
+  division: String!
+}
+
+type Chat {
+  id: ID!
+  title: String!
+  posts: [Post!]!
+  user: User!
+}
+
+type Post {
+  id: ID!
+  user: User!
+  content: String!
+  deletedAt: String
+}
+
+type Mutation {
+  updateProfile(input: ProfileInput!): ProfileUpdatedResult!
+  createChat(input: CreateChatInput!): ChatCreatedResult!
+  removeChat(input: RemoveChatInput!): ChatRemovedResult!
+  createPost(input: CreatePostInput!): PostCreatedResult!
+  removePost(input: RemovePostInput!): PostRemovedResult!
+}
+
+union ProfileUpdatedResult = User | ProfileUpdatedError
+
+type ProfileUpdatedError {
+  message: String!
+}
+
+input ProfileInput {
+  name: String!
+  image: String!
+  email: String!
+  division: String!
+}
+
+union ChatCreatedResult = Chat | ChatCreatedError
+
+type ChatCreatedError {
+  message: String!
+}
+
+input CreateChatInput {
+  user_id: ID!
+  title: String!
+}
+
+union ChatRemovedResult = ChatRemovedSuccess | ChatRemovedError
+
+type ChatRemovedSuccess {
+  id: ID!
+}
+
+type ChatRemovedError {
+  message: String!
+}
+
+input RemoveChatInput {
+  user_id: ID!
+  id: ID!
+}
+
+union PostCreatedResult = Post | PostCreatedError
+
+type PostCreatedError {
+  message: String!
+}
+
+input CreatePostInput {
+  chat_id: ID!
+  user_id: ID!
+  title: String!
+}
+
+union PostRemovedResult = Post | PostRemovedError
+
+type PostRemovedError {
+  message: String!
+}
+
+input RemovePostInput {
+  id: ID!
+  user_id: ID!
+}

@@ -1,9 +1,10 @@
-import { StatusBar } from 'expo-status-bar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-
-import useCachedResources from './hooks/useCachedResources';
-import useColorScheme from './hooks/useColorScheme';
-import Navigation from './navigation';
+import { StyleSheet } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import useCachedResources from "./hooks/useCachedResources";
+import useColorScheme from "./hooks/useColorScheme";
+import Navigation from "@navigation/index";
+import { RelayEnvironmentProvider } from "react-relay/hooks";
+import RelayEnvironment from "./RelayEnvironment";
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -13,10 +14,19 @@ export default function App() {
     return null;
   } else {
     return (
-      <SafeAreaProvider>
-        <Navigation colorScheme={colorScheme} />
-        <StatusBar />
-      </SafeAreaProvider>
+      <RelayEnvironmentProvider environment={RelayEnvironment}>
+        <SafeAreaProvider>
+          <SafeAreaView style={styles.container}>
+            <Navigation colorScheme={colorScheme} />
+          </SafeAreaView>
+        </SafeAreaProvider>
+      </RelayEnvironmentProvider>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
