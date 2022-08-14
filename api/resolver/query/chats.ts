@@ -1,63 +1,54 @@
-import { GraphQLNonNull, GraphQLList, GraphQLID } from "graphql";
-import { ChatType, ChatModel } from "@api/types/chat";
-import { UserModel } from "@api/types/user";
-import { decode } from "@api/convertId";
-import type {
-  User as PrismaUser,
-  Chat as PrismaChat,
-  Prisma,
-} from "@prisma/client";
+import { GraphQLNonNull, GraphQLID } from "graphql";
 import prisma from "@database/lib";
+import type { Prisma } from "@prisma/client";
+import {
+  connectionArgs,
+  connectionFromArray,
+  ConnectionArguments,
+  Connection,
+} from "graphql-relay";
+import fromGlobalId from "@api/fromGlobalId";
+import { ChatModel, ChatConnection } from "@api/types/chat";
 
-interface ChatsParams {
+interface Query extends ConnectionArguments {
   user_id?: string;
 }
 
-class Chat extends ChatModel {
-  user: UserModel;
-  constructor(
-    params: PrismaChat & {
-      user: PrismaUser;
-    }
-  ) {
-    super(params);
-    this.user = new UserModel(params.user);
-  }
-}
-
-async function find(params: ChatsParams): Promise<Chat[]> {
+async function find(userId?: string): Promise<ChatModel[]> {
   try {
-    const where: Prisma.ChatWhereInput | undefined = {};
-    if (params.user_id) {
-      where.user_id = decode(params.user_id);
+    const where: Prisma.ChatWhereInput = {
+      deletedAt: null,
+    };
+    if (userId) {
+      const id = fromGlobalId(userId);
+      where.user_id = id;
     }
     const chats = await prisma.chat.findMany({
       where,
       include: { user: true },
     });
-    return chats.map((chat) => new Chat(chat));
+    return chats.map((chat) => new ChatModel(chat));
   } catch (e) {
     throw e;
   }
 }
 
-const chats = {
-  type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(ChatType))),
+export default {
+  type: new GraphQLNonNull(ChatConnection),
   args: {
+    ...connectionArgs,
     user_id: {
       type: GraphQLID,
     },
   },
-  resolve(obj: any, args: ChatsParams): Promise<Chat[]> {
+  resolve(obj: undefined, args: Query): Promise<Connection<ChatModel>> {
     return new Promise(async (resolve, reject) => {
       try {
-        const result = await find(args);
-        resolve(result);
+        const chats = await find(args.user_id);
+        resolve(connectionFromArray(chats, args));
       } catch (e) {
         reject(e);
       }
     });
   },
 };
-
-export default chats;

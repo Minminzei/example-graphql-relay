@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<08ae07bfb69bdcece935df003c0cd02a>>
+ * @generated SignedSource<<0e7e17ec6fe40033540e94ccf7e9df3f>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -12,15 +12,7 @@ import { Fragment, ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type Chat_detail$data = {
   readonly id: string;
-  readonly posts: ReadonlyArray<{
-    readonly deletedAt: string | null;
-    readonly id: string;
-    readonly user: {
-      readonly id: string;
-    };
-    readonly " $fragmentSpreads": FragmentRefs<"ChatMessage_post">;
-  }>;
-  readonly " $fragmentSpreads": FragmentRefs<"ChatHeader_owner" | "ChatPost_chat">;
+  readonly " $fragmentSpreads": FragmentRefs<"ChatHeader_owner" | "ChatMessage_chat" | "ChatPost_chat">;
   readonly " $fragmentType": "Chat_detail";
 };
 export type Chat_detail$key = {
@@ -28,21 +20,24 @@ export type Chat_detail$key = {
   readonly " $fragmentSpreads": FragmentRefs<"Chat_detail">;
 };
 
-const node: ReaderFragment = (function(){
-var v0 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-};
-return {
+const node: ReaderFragment = {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
   "name": "Chat_detail",
   "selections": [
-    (v0/*: any*/),
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "id",
+      "storageKey": null
+    },
+    {
+      "args": null,
+      "kind": "FragmentSpread",
+      "name": "ChatMessage_chat"
+    },
     {
       "args": null,
       "kind": "FragmentSpread",
@@ -52,49 +47,12 @@ return {
       "args": null,
       "kind": "FragmentSpread",
       "name": "ChatPost_chat"
-    },
-    {
-      "alias": null,
-      "args": null,
-      "concreteType": "Post",
-      "kind": "LinkedField",
-      "name": "posts",
-      "plural": true,
-      "selections": [
-        (v0/*: any*/),
-        {
-          "alias": null,
-          "args": null,
-          "kind": "ScalarField",
-          "name": "deletedAt",
-          "storageKey": null
-        },
-        {
-          "alias": null,
-          "args": null,
-          "concreteType": "User",
-          "kind": "LinkedField",
-          "name": "user",
-          "plural": false,
-          "selections": [
-            (v0/*: any*/)
-          ],
-          "storageKey": null
-        },
-        {
-          "args": null,
-          "kind": "FragmentSpread",
-          "name": "ChatMessage_post"
-        }
-      ],
-      "storageKey": null
     }
   ],
   "type": "Chat",
   "abstractKey": null
 };
-})();
 
-(node as any).hash = "4384add8bd0aa1f481fea83ece5eecb3";
+(node as any).hash = "0042c0fc8d10fb847c925d09e7d8c78f";
 
 export default node;

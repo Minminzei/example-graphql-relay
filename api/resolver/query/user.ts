@@ -1,17 +1,17 @@
 import { GraphQLNonNull, GraphQLID } from "graphql";
-import { decode } from "@api/convertId";
-import { UserType, UserModel } from "@api/types/user";
 import prisma from "@database/lib";
+import fromGlobalId from "@api/fromGlobalId";
+import { UserModel, UserType } from "@api/types/user";
 
-async function get(id: string): Promise<UserModel> {
+async function get(userId: string): Promise<UserModel> {
   try {
+    const id = fromGlobalId(userId);
     const user = await prisma.user.findUnique({
       where: {
-        id: decode(id),
+        id,
       },
-      include: { chats: true },
     });
-    if (!user) {
+    if (!user || user.deletedAt) {
       throw new Error("Not Found");
     }
     return new UserModel(user);
@@ -20,14 +20,14 @@ async function get(id: string): Promise<UserModel> {
   }
 }
 
-const user = {
+export default {
   type: new GraphQLNonNull(UserType),
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLID),
     },
   },
-  resolve(obj: any, args: any): Promise<UserModel> {
+  resolve(ogj: undefined, args: { id: string }): Promise<UserModel> {
     return new Promise(async (resolve, reject) => {
       try {
         const result = await get(args.id);
@@ -38,5 +38,3 @@ const user = {
     });
   },
 };
-
-export default user;

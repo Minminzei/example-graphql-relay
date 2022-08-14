@@ -11,6 +11,7 @@ import Button from "@components/atoms/Button";
 import { ProfileUser_data$key } from "@generated/ProfileUser_data.graphql";
 import { ProfileUserMutation } from "@generated/ProfileUserMutation.graphql";
 import { isEmpty, isEmail } from "class-validator";
+import message, { MessageData } from "@recoil/message";
 
 const profileUserQuery = graphql`
   fragment ProfileUser_data on User {
@@ -81,6 +82,8 @@ export default function ProfileUser({
     division: null,
   });
 
+  const { set: setMessage } = message();
+
   function validateAndUpdate(
     column: string,
     value: string | number | null
@@ -130,7 +133,19 @@ export default function ProfileUser({
         },
         onCompleted({ updateProfile }) {
           if (updateProfile.__typename === "ProfileUpdatedError") {
-            Alert.alert(updateProfile.message);
+            setMessage(
+              new MessageData({
+                message: updateProfile.message,
+                error: true,
+              })
+            );
+          } else {
+            setMessage(
+              new MessageData({
+                message: "保存しました",
+                mode: "toast",
+              })
+            );
           }
           resolve();
         },

@@ -4,10 +4,10 @@ import {
   GraphQLNonNull,
   GraphQLID,
 } from "graphql";
-import { encode } from "@api/convertId";
-import type { User as PrismaUser } from "@prisma/client";
+import { toGlobalId } from "graphql-relay";
+import type { User, Chat } from "@prisma/client";
 
-const UserType = new GraphQLObjectType({
+const UserType: GraphQLObjectType = new GraphQLObjectType({
   name: "User",
   fields: {
     id: { type: new GraphQLNonNull(GraphQLID) },
@@ -32,8 +32,9 @@ class UserModel {
   image: string;
   email: string;
   division: string;
-  constructor(params: PrismaUser) {
-    this.id = encode(params.id, "User");
+
+  constructor(params: User) {
+    this.id = toGlobalId("User", params.id);
     this.name = params.name || "";
     this.image = params.image || "";
     this.email = params.email || "";

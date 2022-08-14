@@ -56,7 +56,7 @@ export default function ChatCreateScreen({
           {queryReference && (
             <ScreenContent
               queryReference={queryReference}
-              move={(id) => navigation.navigate("Chat", { id })}
+              move={(id) => navigation.replace("Chat", { id })}
             />
           )}
         </Suspense>

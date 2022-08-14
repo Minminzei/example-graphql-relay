@@ -4,11 +4,15 @@ import {
   GraphQLNonNull,
   GraphQLID,
 } from "graphql";
-import { encode } from "@api/convertId";
-import type { Post as PrismaPost, User as PrismaUser } from "@prisma/client";
+import {
+  connectionDefinitions,
+  toGlobalId,
+  offsetToCursor,
+} from "graphql-relay";
+import type { Post, User } from "@prisma/client";
 import { UserType, UserModel } from "@api/types/user";
 
-const PostType: any = new GraphQLObjectType({
+const PostType: GraphQLObjectType = new GraphQLObjectType({
   name: "Post",
   fields: {
     id: { type: new GraphQLNonNull(GraphQLID) },
@@ -24,23 +28,40 @@ const PostType: any = new GraphQLObjectType({
   },
 });
 
+const { connectionType: PostConnection, edgeType: PostEdgeType } =
+  connectionDefinitions({
+    name: "PostConnection",
+    nodeType: new GraphQLNonNull(PostType),
+  });
+
 class PostModel {
   id: string;
   content: string;
+  deletedAt: Date | null;
   user: UserModel;
   constructor(
-    params: PrismaPost & {
-      user: PrismaUser;
+    params: Post & {
+      user: User;
     }
   ) {
-    this.id = encode(params.id, "Post");
+    this.id = toGlobalId("Post", params.id);
     if (params.deletedAt) {
       this.content = "***";
     } else {
       this.content = params.content || "";
     }
+    this.deletedAt = params.deletedAt;
     this.user = new UserModel(params.user);
   }
 }
 
-export { PostType, PostModel };
+class PostEdgeModel {
+  cursor: string;
+  node: PostModel;
+  constructor(params: { cursor: number; node: PostModel }) {
+    this.cursor = offsetToCursor(params.cursor);
+    this.node = params.node;
+  }
+}
+
+export { PostType, PostConnection, PostEdgeType, PostModel, PostEdgeModel };

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<f7008e40a2498551b9359a4cf0b28e0b>>
+ * @generated SignedSource<<5a5d4a2e7a667b67fc0479047b6a0653>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,20 +10,20 @@
 
 import { Fragment, ReaderFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type ProfileChat_viewer$data = {
+export type ChatMessage_chat$data = {
   readonly id: string;
-  readonly " $fragmentType": "ProfileChat_viewer";
+  readonly " $fragmentType": "ChatMessage_chat";
 };
-export type ProfileChat_viewer$key = {
-  readonly " $data"?: ProfileChat_viewer$data;
-  readonly " $fragmentSpreads": FragmentRefs<"ProfileChat_viewer">;
+export type ChatMessage_chat$key = {
+  readonly " $data"?: ChatMessage_chat$data;
+  readonly " $fragmentSpreads": FragmentRefs<"ChatMessage_chat">;
 };
 
 const node: ReaderFragment = {
   "argumentDefinitions": [],
   "kind": "Fragment",
   "metadata": null,
-  "name": "ProfileChat_viewer",
+  "name": "ChatMessage_chat",
   "selections": [
     {
       "alias": null,
@@ -33,10 +33,10 @@ const node: ReaderFragment = {
       "storageKey": null
     }
   ],
-  "type": "User",
+  "type": "Chat",
   "abstractKey": null
 };
 
-(node as any).hash = "c9ee2dbd8b672886987104b846008edf";
+(node as any).hash = "ad170dd042636a9592b8cf775e6532f9";
 
 export default node;

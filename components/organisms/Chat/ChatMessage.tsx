@@ -6,18 +6,31 @@ import {
   Alert,
 } from "react-native";
 import { View, Text } from "@components/atoms/Themed";
-import { useFragment, useMutation, graphql } from "react-relay/hooks";
+import {
+  useFragment,
+  useMutation,
+  graphql,
+  ConnectionHandler,
+} from "react-relay/hooks";
 import Fonts from "@constants/Fonts";
 import Colors from "@constants/Colors";
 import { ChatMessage_post$key } from "@generated/ChatMessage_post.graphql";
 import { ChatMessage_viewer$key } from "@generated/ChatMessage_viewer.graphql";
+import { ChatMessage_chat$key } from "@generated/ChatMessage_chat.graphql";
 import { ChatMessageRemoveMutation } from "@generated/ChatMessageRemoveMutation.graphql";
 import Avatar from "@components/atoms/Avatar";
 import Spacer from "@components/atoms/Spacer";
 import Loading from "@components/atoms/Loading";
+import message, { MessageData } from "@recoil/message";
 
 const chatMessageViewerQuery = graphql`
   fragment ChatMessage_viewer on User {
+    id
+  }
+`;
+
+const chatMessageChatQuery = graphql`
+  fragment ChatMessage_chat on Chat {
     id
   }
 `;
@@ -36,12 +49,14 @@ const chatMessagePostQuery = graphql`
 `;
 
 const chatMessageMutation = graphql`
-  mutation ChatMessageRemoveMutation($input: RemovePostInput!) {
+  mutation ChatMessageRemoveMutation(
+    $input: RemovePostInput!
+    $connections: [ID!]!
+  ) {
     removePost(input: $input) {
       __typename
-      ... on Post {
-        id
-        deletedAt
+      ... on RemovePostId {
+        removePostId @deleteEdge(connections: $connections)
       }
       ... on PostRemovedError {
         message
@@ -52,13 +67,13 @@ const chatMessageMutation = graphql`
 
 export default function ChatMessage({
   postFragment,
+  chatFragment,
   viewerFragment,
 }: {
   postFragment: ChatMessage_post$key;
+  chatFragment: ChatMessage_chat$key;
   viewerFragment: ChatMessage_viewer$key;
 }) {
-  const [action, setAction] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
   const data = useFragment<ChatMessage_post$key>(
     chatMessagePostQuery,
     postFragment
@@ -67,13 +82,26 @@ export default function ChatMessage({
     chatMessageViewerQuery,
     viewerFragment
   );
+  const { id: chatId } = useFragment<ChatMessage_chat$key>(
+    chatMessageChatQuery,
+    chatFragment
+  );
+  const [action, setAction] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const { set: setMessage } = message();
+
   const [commit] = useMutation<ChatMessageRemoveMutation>(chatMessageMutation);
   async function remove(): Promise<void> {
-    setAction(false);
-    if (viewerId === data.user.id) {
+    if (viewerId !== data.user.id) {
       return;
     }
+    const connectionId = ConnectionHandler.getConnectionID(
+      chatId,
+      "Chat_posts"
+    );
+
     setLoading(true);
+    setAction(false);
     await new Promise<void>((resolve) => {
       commit({
         variables: {
@@ -81,10 +109,16 @@ export default function ChatMessage({
             id: data.id,
             user_id: data.user.id,
           },
+          connections: [connectionId],
         },
         onCompleted({ removePost }) {
           if (removePost.__typename === "PostRemovedError") {
-            Alert.alert(removePost.message);
+            setMessage(
+              new MessageData({
+                message: removePost.message,
+                error: true,
+              })
+            );
           }
           resolve();
         },
@@ -101,7 +135,7 @@ export default function ChatMessage({
           {data.deletedAt ? (
             <Text style={styles.deleted}>削除されました</Text>
           ) : (
-            <TouchableWithoutFeedback onLongPress={() => setAction(false)}>
+            <TouchableWithoutFeedback onLongPress={() => setAction(true)}>
               <View style={[styles.message, styles.blue]}>
                 <Text style={styles.text}>{data.content}</Text>
               </View>
@@ -109,7 +143,9 @@ export default function ChatMessage({
           )}
         </View>
         {action && (
-          <View style={styles.actions}>
+          <>
+            <Spacer height={4} />
+
             <View style={styles.buttons}>
               <TouchableOpacity style={styles.button} onPress={remove}>
                 <Text style={styles.buttonText}>削除する</Text>
@@ -124,7 +160,7 @@ export default function ChatMessage({
                 <Text style={styles.buttonText}>キャンセル</Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </>
         )}
         {loading && <Loading mask />}
       </View>
@@ -177,7 +213,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   blue: {
-    backgroundColor: Colors.blue,
+    backgroundColor: Colors.blueLight,
   },
   avatar: {
     paddingTop: 4,
@@ -189,30 +225,17 @@ const styles = StyleSheet.create({
     ...Fonts.sm,
     color: Colors.gray,
   },
-  actions: {
-    position: "absolute",
-    right: 0,
-    bottom: 0,
-    zIndex: 1,
-  },
   buttons: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "flex-end",
     alignItems: "center",
-    height: 30,
-    marginRight: 10,
-    marginBottom: 10,
-    backgroundColor: Colors.primary,
   },
   button: {
-    height: 26,
-    paddingHorizontal: 8,
     justifyContent: "center",
     alignItems: "center",
   },
   buttonText: {
-    color: Colors.gray,
+    color: Colors.blue,
     ...Fonts.xs,
-    lineHeight: 26,
   },
 });

@@ -3,6 +3,7 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 import { View } from "@components/atoms/Themed";
 import { navigate } from "@navigation/navigator";
 import Colors from "@constants/Colors";
+import { PagingChats } from "@constants/App";
 import Icons from "@constants/Icons";
 import {
   usePreloadedQuery,
@@ -15,8 +16,8 @@ import Chats from "@components/templates/Chats";
 import { ChatsScreenQuery } from "generated/ChatsScreenQuery.graphql";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 const chatsScreenQuery = graphql`
-  query ChatsScreenQuery {
-    ...Chats_list
+  query ChatsScreenQuery($first: Int!) {
+    ...Chats_list @arguments(first: $first)
   }
 `;
 
@@ -37,7 +38,7 @@ export default function ChatsScreen() {
     useQueryLoader<any>(chatsScreenQuery);
 
   React.useEffect(() => {
-    loadQuery({});
+    loadQuery({ first: PagingChats });
     return () => {
       disposeQuery();
     };

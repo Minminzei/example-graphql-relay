@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<03308aee5c4482f6db325b7a9f3e0802>>
+ * @generated SignedSource<<313e1f3cf3221ba4fbec95a855ccc80c>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,20 +10,20 @@
 
 import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type User_chats$data = {
+export type ProfileChats_list$data = {
   readonly chats: {
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly id: string;
-        readonly " $fragmentSpreads": FragmentRefs<"UserChat_data">;
+        readonly " $fragmentSpreads": FragmentRefs<"ProfileChatItem_chat">;
       };
     } | null> | null;
   };
-  readonly " $fragmentType": "User_chats";
+  readonly " $fragmentType": "ProfileChats_list";
 };
-export type User_chats$key = {
-  readonly " $data"?: User_chats$data;
-  readonly " $fragmentSpreads": FragmentRefs<"User_chats">;
+export type ProfileChats_list$key = {
+  readonly " $data"?: ProfileChats_list$data;
+  readonly " $fragmentSpreads": FragmentRefs<"ProfileChats_list">;
 };
 
 const node: ReaderFragment = (function(){
@@ -68,10 +68,10 @@ return {
         "path": (v0/*: any*/)
       },
       "fragmentPathInResult": [],
-      "operation": require('./User_chats_pagination.graphql')
+      "operation": require('./ProfileChats_list_pagination.graphql')
     }
   },
-  "name": "User_chats",
+  "name": "ProfileChats_list",
   "selections": [
     {
       "alias": "chats",
@@ -84,7 +84,7 @@ return {
       ],
       "concreteType": "ChatConnectionConnection",
       "kind": "LinkedField",
-      "name": "__Chats__chats_connection",
+      "name": "__ProfileChats_chats_connection",
       "plural": false,
       "selections": [
         {
@@ -113,7 +113,7 @@ return {
                 {
                   "args": null,
                   "kind": "FragmentSpread",
-                  "name": "UserChat_data"
+                  "name": "ProfileChatItem_chat"
                 },
                 {
                   "alias": null,
@@ -169,6 +169,6 @@ return {
 };
 })();
 
-(node as any).hash = "66b6cd43c7bb909f77972e9b4e326eaa";
+(node as any).hash = "639acb7cbf8fb47f1b589b3c79ad5b85";
 
 export default node;

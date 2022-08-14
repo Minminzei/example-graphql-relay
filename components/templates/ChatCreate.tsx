@@ -1,7 +1,12 @@
 import React, { useState } from "react";
-import { StyleSheet, ScrollView, Alert } from "react-native";
+import { StyleSheet, ScrollView } from "react-native";
 import { View } from "@components/atoms/Themed";
-import { useMutation, useFragment, graphql } from "react-relay/hooks";
+import {
+  useMutation,
+  useFragment,
+  graphql,
+  ConnectionHandler,
+} from "react-relay/hooks";
 import Colors from "@constants/Colors";
 import KeyboardAvoidingView from "@components/atoms/KeyboardAvoidingView";
 import TextInput from "@components/atoms/TextInput";
@@ -9,6 +14,7 @@ import Spacer from "@components/atoms/Spacer";
 import Button from "@components/atoms/Button";
 import { ChatCreateMutation } from "@generated/ChatCreateMutation.graphql";
 import { ChatCreate_viewer$key } from "@generated/ChatCreate_viewer.graphql";
+import message, { MessageData } from "@recoil/message";
 
 const viewerQuery = graphql`
   fragment ChatCreate_viewer on User {
@@ -17,15 +23,20 @@ const viewerQuery = graphql`
 `;
 
 const chatCreateMutation = graphql`
-  mutation ChatCreateMutation($input: CreateChatInput!) {
+  mutation ChatCreateMutation($input: CreateChatInput!, $connections: [ID!]!) {
     createChat(input: $input) {
       __typename
-      ... on Chat {
-        id
-        title
-        user {
-          name
-          image
+      ... on ChatEdges {
+        chatEdges @appendEdge(connections: $connections) {
+          cursor
+          node {
+            id
+            title
+            user {
+              name
+              image
+            }
+          }
         }
       }
       ... on ChatCreatedError {
@@ -49,12 +60,18 @@ export default function ChatCreate({
   );
   const [loading, setLoading] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
+  const { set: setMessage } = message();
 
   async function create(): Promise<void> {
     if (!title) {
       return;
     }
     setLoading(true);
+    const connectionId = ConnectionHandler.getConnectionID(
+      "client:root",
+      "Chats_chats"
+    );
+
     await new Promise<void>((resolve) => {
       commit({
         variables: {
@@ -62,15 +79,30 @@ export default function ChatCreate({
             user_id: viewerId,
             title,
           },
+          connections: [connectionId],
         },
         onCompleted({ createChat }) {
           if (createChat.__typename === "ChatCreatedError") {
-            Alert.alert(createChat.message);
+            setMessage(
+              new MessageData({
+                message: createChat.message,
+                error: true,
+              })
+            );
             setLoading(false);
-          } else if (createChat.__typename === "Chat") {
-            move(createChat.id);
+          } else if (createChat.__typename === "ChatEdges") {
+            setMessage(
+              new MessageData({
+                message: "チャットを作成しました",
+                mode: "toast",
+              })
+            );
+            move(createChat.chatEdges?.node.id || "");
           }
           resolve();
+        },
+        onError(e) {
+          console.error;
         },
       });
     });

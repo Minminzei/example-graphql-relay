@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<03308aee5c4482f6db325b7a9f3e0802>>
+ * @generated SignedSource<<0ee62437f791ffcff13d96af0c1e8c5b>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,26 +10,34 @@
 
 import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type User_chats$data = {
-  readonly chats: {
+export type Chat_pagination$data = {
+  readonly id: string;
+  readonly posts: {
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly id: string;
-        readonly " $fragmentSpreads": FragmentRefs<"UserChat_data">;
+        readonly " $fragmentSpreads": FragmentRefs<"ChatMessage_post">;
       };
     } | null> | null;
-  };
-  readonly " $fragmentType": "User_chats";
+  } | null;
+  readonly " $fragmentType": "Chat_pagination";
 };
-export type User_chats$key = {
-  readonly " $data"?: User_chats$data;
-  readonly " $fragmentSpreads": FragmentRefs<"User_chats">;
+export type Chat_pagination$key = {
+  readonly " $data"?: Chat_pagination$data;
+  readonly " $fragmentSpreads": FragmentRefs<"Chat_pagination">;
 };
 
 const node: ReaderFragment = (function(){
 var v0 = [
-  "chats"
-];
+  "posts"
+],
+v1 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "id",
+  "storageKey": null
+};
 return {
   "argumentDefinitions": [
     {
@@ -41,11 +49,6 @@ return {
       "defaultValue": null,
       "kind": "LocalArgument",
       "name": "first"
-    },
-    {
-      "defaultValue": null,
-      "kind": "LocalArgument",
-      "name": "user_id"
     }
   ],
   "kind": "Fragment",
@@ -67,30 +70,27 @@ return {
         "backward": null,
         "path": (v0/*: any*/)
       },
-      "fragmentPathInResult": [],
-      "operation": require('./User_chats_pagination.graphql')
+      "fragmentPathInResult": [
+        "node"
+      ],
+      "operation": require('./Chat_pagination_query.graphql'),
+      "identifierField": "id"
     }
   },
-  "name": "User_chats",
+  "name": "Chat_pagination",
   "selections": [
     {
-      "alias": "chats",
-      "args": [
-        {
-          "kind": "Variable",
-          "name": "user_id",
-          "variableName": "user_id"
-        }
-      ],
-      "concreteType": "ChatConnectionConnection",
+      "alias": "posts",
+      "args": null,
+      "concreteType": "PostConnectionConnection",
       "kind": "LinkedField",
-      "name": "__Chats__chats_connection",
+      "name": "__Chat_posts_connection",
       "plural": false,
       "selections": [
         {
           "alias": null,
           "args": null,
-          "concreteType": "ChatConnectionEdge",
+          "concreteType": "PostConnectionEdge",
           "kind": "LinkedField",
           "name": "edges",
           "plural": true,
@@ -98,22 +98,16 @@ return {
             {
               "alias": null,
               "args": null,
-              "concreteType": "Chat",
+              "concreteType": "Post",
               "kind": "LinkedField",
               "name": "node",
               "plural": false,
               "selections": [
-                {
-                  "alias": null,
-                  "args": null,
-                  "kind": "ScalarField",
-                  "name": "id",
-                  "storageKey": null
-                },
+                (v1/*: any*/),
                 {
                   "args": null,
                   "kind": "FragmentSpread",
-                  "name": "UserChat_data"
+                  "name": "ChatMessage_post"
                 },
                 {
                   "alias": null,
@@ -162,13 +156,14 @@ return {
         }
       ],
       "storageKey": null
-    }
+    },
+    (v1/*: any*/)
   ],
-  "type": "Query",
+  "type": "Chat",
   "abstractKey": null
 };
 })();
 
-(node as any).hash = "66b6cd43c7bb909f77972e9b4e326eaa";
+(node as any).hash = "87680ce5a40ec15d1a4bcbf760071f4a";
 
 export default node;

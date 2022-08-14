@@ -70,6 +70,7 @@ export default function Dialog({
     </Modal>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: "column",

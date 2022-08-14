@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<451c0081a0623bdd935ba84275f18b64>>
+ * @generated SignedSource<<7f08c9045ec62476487628219a6e46ff>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,25 +11,30 @@
 import { ConcreteRequest, Mutation } from 'relay-runtime';
 export type CreatePostInput = {
   chat_id: string;
-  title: string;
+  content: string;
   user_id: string;
 };
 export type ChatPostMutation$variables = {
+  connections: ReadonlyArray<string>;
   input: CreatePostInput;
 };
 export type ChatPostMutation$data = {
   readonly createPost: {
-    readonly __typename: "Post";
-    readonly content: string;
-    readonly deletedAt: string | null;
-    readonly id: string;
-    readonly user: {
-      readonly image: string;
-      readonly name: string;
-    };
-  } | {
-    readonly __typename: "PostCreatedError";
+    readonly __typename: "CreatePostError";
     readonly message: string;
+  } | {
+    readonly __typename: "PostEdges";
+    readonly postEdges: {
+      readonly cursor: string;
+      readonly node: {
+        readonly content: string;
+        readonly id: string;
+        readonly user: {
+          readonly image: string;
+          readonly name: string;
+        };
+      };
+    } | null;
   } | {
     // This will never be '%other', but we need some
     // value in case none of the concrete values match.
@@ -42,63 +47,66 @@ export type ChatPostMutation = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "input"
-  }
-],
-v1 = [
+var v0 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "connections"
+},
+v1 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "input"
+},
+v2 = [
   {
     "kind": "Variable",
     "name": "input",
     "variableName": "input"
   }
 ],
-v2 = {
+v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
   "name": "__typename",
   "storageKey": null
 },
-v3 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-},
 v4 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "content",
+  "name": "cursor",
   "storageKey": null
 },
 v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "deletedAt",
+  "name": "id",
   "storageKey": null
 },
 v6 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "name",
+  "name": "content",
   "storageKey": null
 },
 v7 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
-  "name": "image",
+  "name": "name",
   "storageKey": null
 },
 v8 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "image",
+  "storageKey": null
+},
+v9 = {
   "kind": "InlineFragment",
   "selections": [
     {
@@ -109,49 +117,74 @@ v8 = {
       "storageKey": null
     }
   ],
-  "type": "PostCreatedError",
+  "type": "CreatePostError",
   "abstractKey": null
 };
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/)
+    ],
     "kind": "Fragment",
     "metadata": null,
     "name": "ChatPostMutation",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v2/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "createPost",
         "plural": false,
         "selections": [
-          (v2/*: any*/),
+          (v3/*: any*/),
           {
             "kind": "InlineFragment",
             "selections": [
-              (v3/*: any*/),
-              (v4/*: any*/),
-              (v5/*: any*/),
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "User",
+                "concreteType": "PostConnectionEdge",
                 "kind": "LinkedField",
-                "name": "user",
+                "name": "postEdges",
                 "plural": false,
                 "selections": [
-                  (v6/*: any*/),
-                  (v7/*: any*/)
+                  (v4/*: any*/),
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "Post",
+                    "kind": "LinkedField",
+                    "name": "node",
+                    "plural": false,
+                    "selections": [
+                      (v5/*: any*/),
+                      (v6/*: any*/),
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "User",
+                        "kind": "LinkedField",
+                        "name": "user",
+                        "plural": false,
+                        "selections": [
+                          (v7/*: any*/),
+                          (v8/*: any*/)
+                        ],
+                        "storageKey": null
+                      }
+                    ],
+                    "storageKey": null
+                  }
                 ],
                 "storageKey": null
               }
             ],
-            "type": "Post",
+            "type": "PostEdges",
             "abstractKey": null
           },
-          (v8/*: any*/)
+          (v9/*: any*/)
         ],
         "storageKey": null
       }
@@ -161,60 +194,101 @@ return {
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v1/*: any*/),
+      (v0/*: any*/)
+    ],
     "kind": "Operation",
     "name": "ChatPostMutation",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v2/*: any*/),
         "concreteType": null,
         "kind": "LinkedField",
         "name": "createPost",
         "plural": false,
         "selections": [
-          (v2/*: any*/),
+          (v3/*: any*/),
           {
             "kind": "InlineFragment",
             "selections": [
-              (v3/*: any*/),
-              (v4/*: any*/),
-              (v5/*: any*/),
               {
                 "alias": null,
                 "args": null,
-                "concreteType": "User",
+                "concreteType": "PostConnectionEdge",
                 "kind": "LinkedField",
-                "name": "user",
+                "name": "postEdges",
                 "plural": false,
                 "selections": [
-                  (v6/*: any*/),
-                  (v7/*: any*/),
-                  (v3/*: any*/)
+                  (v4/*: any*/),
+                  {
+                    "alias": null,
+                    "args": null,
+                    "concreteType": "Post",
+                    "kind": "LinkedField",
+                    "name": "node",
+                    "plural": false,
+                    "selections": [
+                      (v5/*: any*/),
+                      (v6/*: any*/),
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "User",
+                        "kind": "LinkedField",
+                        "name": "user",
+                        "plural": false,
+                        "selections": [
+                          (v7/*: any*/),
+                          (v8/*: any*/),
+                          (v5/*: any*/)
+                        ],
+                        "storageKey": null
+                      }
+                    ],
+                    "storageKey": null
+                  }
                 ],
                 "storageKey": null
+              },
+              {
+                "alias": null,
+                "args": null,
+                "filters": null,
+                "handle": "prependEdge",
+                "key": "",
+                "kind": "LinkedHandle",
+                "name": "postEdges",
+                "handleArgs": [
+                  {
+                    "kind": "Variable",
+                    "name": "connections",
+                    "variableName": "connections"
+                  }
+                ]
               }
             ],
-            "type": "Post",
+            "type": "PostEdges",
             "abstractKey": null
           },
-          (v8/*: any*/)
+          (v9/*: any*/)
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "b9c290965a449d4d5d5d693eaf93808e",
+    "cacheID": "b91b127de3cdc364aea0db3dba36bf65",
     "id": null,
     "metadata": {},
     "name": "ChatPostMutation",
     "operationKind": "mutation",
-    "text": "mutation ChatPostMutation(\n  $input: CreatePostInput!\n) {\n  createPost(input: $input) {\n    __typename\n    ... on Post {\n      id\n      content\n      deletedAt\n      user {\n        name\n        image\n        id\n      }\n    }\n    ... on PostCreatedError {\n      message\n    }\n  }\n}\n"
+    "text": "mutation ChatPostMutation(\n  $input: CreatePostInput!\n) {\n  createPost(input: $input) {\n    __typename\n    ... on PostEdges {\n      postEdges {\n        cursor\n        node {\n          id\n          content\n          user {\n            name\n            image\n            id\n          }\n        }\n      }\n    }\n    ... on CreatePostError {\n      message\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "be6a44571370d369cfa95f275b4889e7";
+(node as any).hash = "82943815f9e94f37f600ff7994c032ed";
 
 export default node;
