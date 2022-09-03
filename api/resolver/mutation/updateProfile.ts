@@ -5,7 +5,7 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
 } from "graphql";
-import { UserType, UserModel } from "@api/types/user";
+import { UserModel, UserType } from "@api/types/user";
 import prisma from "@database/lib";
 import ErrorType from "@api/types/error";
 import guestId from "@api/guestId";
@@ -50,16 +50,17 @@ const profileInput = new GraphQLInputObjectType({
   },
 });
 
-const ProfileUpdatedErrorType = new GraphQLObjectType({
-  name: "ProfileUpdatedError",
-  fields: {
-    message: { type: new GraphQLNonNull(GraphQLString) },
-  },
-});
-
 const ProfileUpdatedResultType = new GraphQLUnionType({
   name: "ProfileUpdatedResult",
-  types: [UserType, ProfileUpdatedErrorType],
+  types: [
+    UserType,
+    new GraphQLObjectType({
+      name: "ProfileUpdatedError",
+      fields: {
+        message: { type: new GraphQLNonNull(GraphQLString) },
+      },
+    }),
+  ],
   resolveType: (value) => {
     if (value instanceof UserModel) {
       return "User";
@@ -68,17 +69,15 @@ const ProfileUpdatedResultType = new GraphQLUnionType({
   },
 });
 
-const updateProfile = {
+export default {
   type: new GraphQLNonNull(ProfileUpdatedResultType),
   args: {
     input: { type: new GraphQLNonNull(profileInput) },
   },
-  resolve(obj: any, { input }: { input: ProfileInput }): Promise<Result> {
+  resolve(obj: undefined, { input }: { input: ProfileInput }): Promise<Result> {
     return new Promise(async (resolve) => {
       const result = await update(input);
       resolve(result);
     });
   },
 };
-
-export default updateProfile;

@@ -1,6 +1,7 @@
 import React, { Suspense } from "react";
 import { StyleSheet } from "react-native";
 import { View } from "@components/atoms/Themed";
+import { PagingChats } from "@constants/App";
 import Header from "@components/atoms/Header";
 import { RootStackScreenProps } from "@navigation/types";
 import {
@@ -14,11 +15,11 @@ import { UserScreenQuery } from "@generated/UserScreenQuery.graphql";
 import User from "@components/templates/User";
 
 const userScreenQuery = graphql`
-  query UserScreenQuery($id: ID!) {
+  query UserScreenQuery($id: ID!, $first: Int!, $after: String) {
     user(id: $id) {
-      ...User_list
+      ...User_data
     }
-    ...User_chats @arguments(user_id: $id)
+    ...User_chats @arguments(first: $first, after: $after, user_id: $id)
   }
 `;
 
@@ -36,7 +37,7 @@ export default function UserScreen({ route }: RootStackScreenProps<"User">) {
   const [queryReference, loadQuery, disposeQuery] =
     useQueryLoader<UserScreenQuery>(userScreenQuery);
   React.useEffect(() => {
-    loadQuery({ id: route.params.id });
+    loadQuery({ id: route.params.id, first: PagingChats });
     return () => {
       disposeQuery();
     };

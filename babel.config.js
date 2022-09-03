@@ -14,6 +14,7 @@ module.exports = function (api) {
             "@components": "./components",
             "@screens": "./screens",
             "@hooks": "./hooks",
+            "@recoil": "./recoil",
             "@constants": "./constants",
             "@generated": "./generated",
             "@navigation": "./navigation",

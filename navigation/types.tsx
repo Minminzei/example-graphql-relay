@@ -25,6 +25,7 @@ export type RootStackParamList = {
   User: {
     id: string;
   };
+  Message: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

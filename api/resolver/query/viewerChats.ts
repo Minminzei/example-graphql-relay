@@ -1,5 +1,6 @@
-import { GraphQLNonNull, GraphQLID } from "graphql";
+import { GraphQLNonNull } from "graphql";
 import prisma from "@database/lib";
+import guestId from "@api/guestId";
 import type { Prisma } from "@prisma/client";
 import {
   connectionArgs,
@@ -7,22 +8,18 @@ import {
   ConnectionArguments,
   Connection,
 } from "graphql-relay";
-import fromGlobalId from "@api/fromGlobalId";
 import { ChatModel, ChatConnection } from "@api/types/chat";
 
 interface Query extends ConnectionArguments {
   user_id?: string;
 }
 
-async function find(userId?: string): Promise<ChatModel[]> {
+async function find(): Promise<ChatModel[]> {
   try {
     const where: Prisma.ChatWhereInput = {
+      user_id: guestId,
       deletedAt: null,
     };
-    if (userId) {
-      const id = fromGlobalId(userId);
-      where.user_id = id;
-    }
     const chats = await prisma.chat.findMany({
       where,
       include: { user: true },
@@ -37,14 +34,11 @@ export default {
   type: new GraphQLNonNull(ChatConnection),
   args: {
     ...connectionArgs,
-    user_id: {
-      type: GraphQLID,
-    },
   },
   resolve(obj: undefined, args: Query): Promise<Connection<ChatModel>> {
     return new Promise(async (resolve, reject) => {
       try {
-        const chats = await find(args.user_id);
+        const chats = await find();
         resolve(connectionFromArray(chats, args));
       } catch (e) {
         reject(e);

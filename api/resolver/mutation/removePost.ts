@@ -6,17 +6,22 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
 } from "graphql";
-import { decode } from "@api/convertId";
-import { PostType, PostModel } from "@api/types/post";
+import fromGlobalId from "@api/fromGlobalId";
+import { PostModel, PostEdgeType, PostEdgeModel } from "@api/types/post";
 import prisma from "@database/lib";
 import ErrorType from "@api/types/error";
+import { toGlobalId } from "graphql-relay";
 
 interface RemovePostInput {
   id: string;
   user_id: string;
 }
 
-type Result = PostModel | ErrorType;
+type Result =
+  | {
+      removePostId: string;
+    }
+  | ErrorType;
 
 const removePostInput = new GraphQLInputObjectType({
   name: "RemovePostInput",
@@ -28,31 +33,31 @@ const removePostInput = new GraphQLInputObjectType({
 
 async function remove(data: RemovePostInput): Promise<Result> {
   try {
-    return await prisma.$transaction(async (): Promise<PostModel> => {
-      const { count } = await prisma.post.updateMany({
-        where: {
-          id: decode(data.id),
-          user_id: decode(data.user_id),
-          deletedAt: null,
-        },
-        data: {
-          deletedAt: new Date(),
-        },
-      });
-      if (count !== 1) {
-        throw new Error("メッセージを削除できませんでした");
-      }
-      const post = await prisma.post.findUnique({
-        where: {
-          id: decode(data.id),
-        },
-        include: { user: true },
-      });
-      if (!post) {
-        throw new Error("メッセージを削除できませんでした");
-      }
-      return new PostModel(post);
+    const { count } = await prisma.post.updateMany({
+      where: {
+        id: fromGlobalId(data.id),
+        user_id: fromGlobalId(data.user_id),
+        deletedAt: null,
+      },
+      data: {
+        deletedAt: new Date(),
+      },
     });
+    if (count !== 1) {
+      throw new Error("メッセージを削除できませんでした");
+    }
+    const post = await prisma.post.findUnique({
+      where: {
+        id: fromGlobalId(data.id),
+      },
+      include: { user: true },
+    });
+    if (!post) {
+      throw new Error("メッセージを削除できませんでした");
+    }
+    return {
+      removePostId: toGlobalId("Post", post.id),
+    };
   } catch (e: any) {
     return {
       message: e.message,
@@ -60,35 +65,44 @@ async function remove(data: RemovePostInput): Promise<Result> {
   }
 }
 
-const PostRemovedErrorType = new GraphQLObjectType({
-  name: "PostRemovedError",
-  fields: {
-    message: { type: new GraphQLNonNull(GraphQLString) },
-  },
-});
-
-const PostRemovedResultType = new GraphQLUnionType({
-  name: "PostRemovedResult",
-  types: [PostType, PostRemovedErrorType],
-  resolveType: (value) => {
-    if (value instanceof PostModel) {
-      return "Post";
-    }
-    return "PostRemovedError";
-  },
-});
-
-const removePost = {
-  type: new GraphQLNonNull(PostRemovedResultType),
+export default {
+  type: new GraphQLNonNull(
+    new GraphQLUnionType({
+      name: "PostRemovedResult",
+      types: [
+        new GraphQLObjectType({
+          name: "RemovePostId",
+          fields: {
+            removePostId: {
+              type: new GraphQLNonNull(GraphQLID),
+            },
+          },
+        }),
+        new GraphQLObjectType({
+          name: "PostRemovedError",
+          fields: {
+            message: { type: new GraphQLNonNull(GraphQLString) },
+          },
+        }),
+      ],
+      resolveType: (value) => {
+        if (value.removePostId) {
+          return "RemovePostId";
+        }
+        return "PostRemovedError";
+      },
+    })
+  ),
   args: {
     input: { type: new GraphQLNonNull(removePostInput) },
   },
-  resolve(obj: any, { input }: { input: RemovePostInput }): Promise<Result> {
+  resolve(
+    obj: undefined,
+    { input }: { input: RemovePostInput }
+  ): Promise<Result> {
     return new Promise(async (resolve) => {
       const result = await remove(input);
       resolve(result);
     });
   },
 };
-
-export default removePost;

@@ -1,26 +1,37 @@
 import React from "react";
 import { StyleSheet, ScrollView } from "react-native";
 import { View, Text } from "@components/atoms/Themed";
-import { useFragment, graphql } from "react-relay/hooks";
+import { useFragment, usePaginationFragment, graphql } from "react-relay/hooks";
 import Colors from "@constants/Colors";
 import Fonts from "@constants/Fonts";
 import Spacer from "@components/atoms/Spacer";
 import { User_chats$key } from "@generated/User_chats.graphql";
-import { User_list$key } from "@generated/User_list.graphql";
+import { User_data$key } from "@generated/User_data.graphql";
 import Profile from "@components/organisms/User/UserProfile";
 import Chat from "@components/organisms/User/UserChat";
 
 const userDataQuery = graphql`
-  fragment User_list on User {
+  fragment User_data on User {
     ...UserProfile_user
   }
 `;
 
 const userChatsQuery = graphql`
-  fragment User_chats on Query @argumentDefinitions(user_id: { type: "ID!" }) {
-    chats(user_id: $user_id) {
-      id
-      ...UserChat_data
+  fragment User_chats on Query
+  @refetchable(queryName: "User_chats_pagination")
+  @argumentDefinitions(
+    after: { type: "String" }
+    first: { type: "Int!" }
+    user_id: { type: "ID!" }
+  ) {
+    chats(first: $first, after: $after, user_id: $user_id)
+      @connection(key: "Chats__chats") {
+      edges {
+        node {
+          id
+          ...UserChat_data
+        }
+      }
     }
   }
 `;
@@ -30,10 +41,12 @@ export default function User({
   userFragment,
 }: {
   chatFragment: User_chats$key;
-  userFragment: User_list$key;
+  userFragment: User_data$key;
 }) {
-  const user = useFragment<User_list$key>(userDataQuery, userFragment);
-  const { chats } = useFragment<User_chats$key>(userChatsQuery, chatFragment);
+  const user = useFragment<User_data$key>(userDataQuery, userFragment);
+  const { data } = usePaginationFragment(userChatsQuery, chatFragment);
+
+  data.chats.edges?.map((row) => row);
 
   return (
     <ScrollView style={styles.container}>
@@ -44,8 +57,10 @@ export default function User({
       <View style={styles.chat}>
         <Text style={styles.title}>Chat</Text>
       </View>
-      {chats.length > 0 ? (
-        chats.map((chat) => <Chat chatFragment={chat} key={chat.id} />)
+      {data.chats.edges && data.chats.edges.length > 0 ? (
+        data.chats.edges.map(
+          (row) => row && <Chat chatFragment={row.node} key={row.node.id} />
+        )
       ) : (
         <Text>チャットはありません</Text>
       )}

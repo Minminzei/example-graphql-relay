@@ -7,16 +7,17 @@ import {
   graphql,
   PreloadedQuery,
 } from "react-relay/hooks";
+import { PagingChats } from "@constants/App";
 import Loading from "@components/atoms/Loading";
 import { ProfileChatsScreenQuery } from "@generated/ProfileChatsScreenQuery.graphql";
-import ProfileChat from "@components/templates/ProfileChat";
+import ProfileChats from "@components/templates/ProfileChats";
 
 const profileScreenQuery = graphql`
-  query ProfileChatsScreenQuery {
+  query ProfileChatsScreenQuery($first: Int!, $after: String) {
+    ...ProfileChats_list @arguments(first: $first, after: $after)
     viewer {
-      ...ProfileChat_viewer
+      ...ProfileChats_viewer
     }
-    ...ProfileChat_list
   }
 `;
 
@@ -29,7 +30,7 @@ function ScreenContent({
     profileScreenQuery,
     queryReference
   );
-  return <ProfileChat userFragment={data.viewer} chatsFragment={data} />;
+  return <ProfileChats chatFramgent={data} viewerFragment={data.viewer} />;
 }
 
 export default function ProfileChatsScreen() {
@@ -37,7 +38,7 @@ export default function ProfileChatsScreen() {
     useQueryLoader<ProfileChatsScreenQuery>(profileScreenQuery);
 
   React.useEffect(() => {
-    loadQuery({});
+    loadQuery({ first: PagingChats });
     return () => {
       disposeQuery();
     };

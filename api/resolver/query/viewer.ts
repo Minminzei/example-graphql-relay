@@ -1,7 +1,7 @@
 import { GraphQLNonNull } from "graphql";
-import { UserType, UserModel } from "@api/types/user";
 import prisma from "@database/lib";
 import guestId from "@api/guestId";
+import { UserModel, UserType } from "@api/types/user";
 
 async function get(): Promise<UserModel> {
   try {
@@ -11,7 +11,7 @@ async function get(): Promise<UserModel> {
       },
       include: { chats: true },
     });
-    if (!user) {
+    if (!user || user.deletedAt) {
       throw new Error("Not Found");
     }
     return new UserModel(user);
@@ -20,7 +20,7 @@ async function get(): Promise<UserModel> {
   }
 }
 
-const viewer = {
+export default {
   type: new GraphQLNonNull(UserType),
   resolve(): Promise<UserModel> {
     return new Promise(async (resolve, reject) => {
@@ -33,5 +33,3 @@ const viewer = {
     });
   },
 };
-
-export default viewer;

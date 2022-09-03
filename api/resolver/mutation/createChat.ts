@@ -6,8 +6,8 @@ import {
   GraphQLInputObjectType,
   GraphQLUnionType,
 } from "graphql";
-import { decode } from "@api/convertId";
-import { ChatType, ChatModel } from "@api/types/chat";
+import fromGlobalId from "@api/fromGlobalId";
+import { ChatModel, ChatEdgeModel, ChatEdgeType } from "@api/types/chat";
 import prisma from "@database/lib";
 import ErrorType from "@api/types/error";
 
@@ -16,7 +16,11 @@ interface CreateChatInput {
   title: string;
 }
 
-type Result = ChatModel | ErrorType;
+type Result =
+  | {
+      chatEdges: ChatEdgeModel;
+    }
+  | ErrorType;
 
 const createChatInput = new GraphQLInputObjectType({
   name: "CreateChatInput",
@@ -31,19 +35,27 @@ async function create(data: CreateChatInput): Promise<Result> {
     const { id } = await prisma.chat.create({
       data: {
         title: data.title,
-        user_id: decode(data.user_id),
+        user_id: fromGlobalId(data.user_id),
       },
     });
     const chat = await prisma.chat.findUnique({
       where: {
         id,
       },
-      include: { user: true },
+      include: {
+        user: true,
+      },
     });
     if (!chat) {
       throw new Error("チャットを作成できませんでした");
     }
-    return new ChatModel(chat);
+
+    return {
+      chatEdges: new ChatEdgeModel({
+        cursor: id,
+        node: new ChatModel(chat),
+      }),
+    };
   } catch (e: any) {
     return {
       message: e.message,
@@ -51,35 +63,44 @@ async function create(data: CreateChatInput): Promise<Result> {
   }
 }
 
-const ChatCreatedErrorType = new GraphQLObjectType({
-  name: "ChatCreatedError",
-  fields: {
-    message: { type: new GraphQLNonNull(GraphQLString) },
-  },
-});
-
-const ChatCreatedResultType = new GraphQLUnionType({
-  name: "ChatCreatedResult",
-  types: [ChatType, ChatCreatedErrorType],
-  resolveType: (value) => {
-    if (value instanceof ChatModel) {
-      return "Chat";
-    }
-    return "ChatCreatedError";
-  },
-});
-
-const createChat = {
-  type: new GraphQLNonNull(ChatCreatedResultType),
+export default {
+  type: new GraphQLNonNull(
+    new GraphQLUnionType({
+      name: "ChatCreatedResult",
+      types: [
+        new GraphQLObjectType({
+          name: "ChatEdges",
+          fields: {
+            chatEdges: {
+              type: ChatEdgeType,
+            },
+          },
+        }),
+        new GraphQLObjectType({
+          name: "ChatCreatedError",
+          fields: {
+            message: { type: new GraphQLNonNull(GraphQLString) },
+          },
+        }),
+      ],
+      resolveType: (value) => {
+        if (value.chatEdges instanceof ChatEdgeModel) {
+          return "ChatEdges";
+        }
+        return "ChatCreatedError";
+      },
+    })
+  ),
   args: {
     input: { type: new GraphQLNonNull(createChatInput) },
   },
-  resolve(obj: any, { input }: { input: CreateChatInput }): Promise<Result> {
+  resolve(
+    obj: undefined,
+    { input }: { input: CreateChatInput }
+  ): Promise<Result> {
     return new Promise(async (resolve) => {
       const result = await create(input);
       resolve(result);
     });
   },
 };
-
-export default createChat;

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<03308aee5c4482f6db325b7a9f3e0802>>
+ * @generated SignedSource<<23fabe8174d2baeb87302319fdad60e0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,25 +10,25 @@
 
 import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type User_chats$data = {
-  readonly chats: {
+export type ProfileChats_list$data = {
+  readonly viewerChats: {
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly id: string;
-        readonly " $fragmentSpreads": FragmentRefs<"UserChat_data">;
+        readonly " $fragmentSpreads": FragmentRefs<"ProfileChatItem_chat">;
       };
     } | null> | null;
   };
-  readonly " $fragmentType": "User_chats";
+  readonly " $fragmentType": "ProfileChats_list";
 };
-export type User_chats$key = {
-  readonly " $data"?: User_chats$data;
-  readonly " $fragmentSpreads": FragmentRefs<"User_chats">;
+export type ProfileChats_list$key = {
+  readonly " $data"?: ProfileChats_list$data;
+  readonly " $fragmentSpreads": FragmentRefs<"ProfileChats_list">;
 };
 
 const node: ReaderFragment = (function(){
 var v0 = [
-  "chats"
+  "viewerChats"
 ];
 return {
   "argumentDefinitions": [
@@ -41,11 +41,6 @@ return {
       "defaultValue": null,
       "kind": "LocalArgument",
       "name": "first"
-    },
-    {
-      "defaultValue": null,
-      "kind": "LocalArgument",
-      "name": "user_id"
     }
   ],
   "kind": "Fragment",
@@ -68,23 +63,17 @@ return {
         "path": (v0/*: any*/)
       },
       "fragmentPathInResult": [],
-      "operation": require('./User_chats_pagination.graphql')
+      "operation": require('./ProfileChats_list_pagination.graphql')
     }
   },
-  "name": "User_chats",
+  "name": "ProfileChats_list",
   "selections": [
     {
-      "alias": "chats",
-      "args": [
-        {
-          "kind": "Variable",
-          "name": "user_id",
-          "variableName": "user_id"
-        }
-      ],
+      "alias": "viewerChats",
+      "args": null,
       "concreteType": "ChatConnectionConnection",
       "kind": "LinkedField",
-      "name": "__Chats__chats_connection",
+      "name": "__ProfileChats__viewerChats_connection",
       "plural": false,
       "selections": [
         {
@@ -113,7 +102,7 @@ return {
                 {
                   "args": null,
                   "kind": "FragmentSpread",
-                  "name": "UserChat_data"
+                  "name": "ProfileChatItem_chat"
                 },
                 {
                   "alias": null,
@@ -169,6 +158,6 @@ return {
 };
 })();
 
-(node as any).hash = "66b6cd43c7bb909f77972e9b4e326eaa";
+(node as any).hash = "015aafad2c1581e2b900f16b0e7de608";
 
 export default node;

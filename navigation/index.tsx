@@ -12,6 +12,7 @@ import {
   createMaterialTopTabNavigator,
   MaterialTopTabBarProps,
 } from "@react-navigation/material-top-tabs";
+import messageData from "@recoil/message";
 import {
   NavigationContainer,
   DefaultTheme,
@@ -30,6 +31,7 @@ import ChatCreateScreen from "@screens/ChatCreateScreen";
 import UserScreen from "@screens/UserScreen";
 import ProfileUserScreen from "@screens/ProfileUserScreen";
 import ProfileChatsScreen from "@screens/ProfileChatsScreen";
+import MessageScreen from "@screens/MessageScreen";
 import {
   RootStackParamList,
   RootTabParamList,
@@ -45,6 +47,8 @@ export default function Navigation({
 }: {
   colorScheme: ColorSchemeName;
 }) {
+  const { get: getMessage } = messageData();
+  const message = getMessage();
   return (
     <NavigationContainer
       ref={navigationRef}
@@ -52,6 +56,7 @@ export default function Navigation({
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
     >
       <RootNavigator />
+      {message && <MessageScreen message={message} />}
     </NavigationContainer>
   );
 }

@@ -1,75 +1,102 @@
 import React, { useState } from "react";
-import { StyleSheet, Alert, FlatList, TouchableOpacity } from "react-native";
-import { View, Text } from "@components/atoms/Themed";
-import { useFragment, useMutation, graphql } from "react-relay/hooks";
+import { StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import { View } from "@components/atoms/Themed";
+import {
+  useFragment,
+  usePaginationFragment,
+  useMutation,
+  graphql,
+  ConnectionHandler,
+} from "react-relay/hooks";
+import { PagingChats } from "@constants/App";
 import Colors from "@constants/Colors";
 import Fonts from "@constants/Fonts";
 import Icons from "@constants/Icons";
 import Dialog from "@components/atoms/Dialog";
 import Spacer from "@components/atoms/Spacer";
 import Guide from "@components/atoms/Guide";
-import Ripple from "react-native-material-ripple";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { navigate } from "@navigation/navigator";
-import { ProfileChat_list$key } from "@generated/ProfileChat_list.graphql";
-import { ProfileChat_viewer$key } from "@generated/ProfileChat_viewer.graphql";
-import { ProfileChatRemoveMutation } from "@generated/ProfileChatRemoveMutation.graphql";
+import { ProfileChats_list$key } from "@generated/ProfileChats_list.graphql";
+import { ProfileChats_viewer$key } from "@generated/ProfileChats_viewer.graphql";
+import { ProfileChatsemoveMutation } from "@generated/ProfileChatsemoveMutation.graphql";
 import Button from "@components/atoms/Button";
 import Loading from "@components/atoms/Loading";
+import message, { MessageData } from "@recoil/message";
+import ChatItem from "@components/organisms/ProfileChat/ProfileChatItem";
 
-const profileChatQuery = graphql`
-  fragment ProfileChat_list on Query {
-    myChats {
-      id
-      title
+const profileChatsChatList = graphql`
+  fragment ProfileChats_list on Query
+  @refetchable(queryName: "ProfileChats_list_pagination")
+  @argumentDefinitions(after: { type: "String" }, first: { type: "Int!" }) {
+    viewerChats(first: $first, after: $after)
+      @connection(key: "ProfileChats__viewerChats") {
+      edges {
+        node {
+          id
+          ...ProfileChatItem_chat
+        }
+      }
     }
   }
 `;
 
-const profileViewerQuery = graphql`
-  fragment ProfileChat_viewer on User {
+const profileChatsUser = graphql`
+  fragment ProfileChats_viewer on User {
     id
   }
 `;
 
 const chatMessageMutation = graphql`
-  mutation ProfileChatRemoveMutation($input: RemoveChatInput!) {
+  mutation ProfileChatsemoveMutation(
+    $input: RemoveChatInput!
+    $connections: [ID!]!
+  ) {
     removeChat(input: $input) {
       __typename
-      ... on ChatRemovedSuccess {
-        id @deleteRecord
+      ... on RemoveChatId {
+        removeChatId @deleteEdge(connections: $connections)
       }
-      ... on ChatRemovedError {
+      ... on RemoveChatError {
         message
       }
     }
   }
 `;
 
-export default function ProfileChat({
-  chatsFragment,
-  userFragment,
+export default function ProfileChats({
+  chatFramgent,
+  viewerFragment,
 }: {
-  chatsFragment: ProfileChat_list$key;
-  userFragment: ProfileChat_viewer$key;
+  chatFramgent: ProfileChats_list$key;
+  viewerFragment: ProfileChats_viewer$key;
 }) {
-  const { myChats } = useFragment<ProfileChat_list$key>(
-    profileChatQuery,
-    chatsFragment
+  const { data, refetch } = usePaginationFragment(
+    profileChatsChatList,
+    chatFramgent
   );
-  const { id: viewerId } = useFragment<ProfileChat_viewer$key>(
-    profileViewerQuery,
-    userFragment
+
+  const { id: viewerId } = useFragment<ProfileChats_viewer$key>(
+    profileChatsUser,
+    viewerFragment
   );
-  const [commit] = useMutation<ProfileChatRemoveMutation>(chatMessageMutation);
+  const [commit] = useMutation<ProfileChatsemoveMutation>(chatMessageMutation);
   const [removeId, setRemoveId] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const { set: setMessage } = message();
 
   async function remove(): Promise<void> {
     if (!removeId) {
       return;
     }
     setLoading(true);
+    setRemoveId(null);
+    const chatsList = ConnectionHandler.getConnectionID("root", "Chats_chats");
+    const viewerChats = ConnectionHandler.getConnectionID(
+      "root",
+      "ProfileChats__viewerChats"
+    );
+
     await new Promise<void>((resolve) => {
       commit({
         variables: {
@@ -77,10 +104,23 @@ export default function ProfileChat({
             id: removeId,
             user_id: viewerId,
           },
+          connections: [chatsList, viewerChats],
         },
         onCompleted({ removeChat }) {
-          if (removeChat.__typename === "ChatRemovedError") {
-            Alert.alert(removeChat.message);
+          if (removeChat.__typename === "RemoveChatError") {
+            setMessage(
+              new MessageData({
+                message: removeChat.message,
+                error: true,
+              })
+            );
+          } else {
+            setMessage(
+              new MessageData({
+                message: "削除しました",
+                mode: "toast",
+              })
+            );
           }
           resolve();
         },
@@ -92,30 +132,12 @@ export default function ProfileChat({
   return (
     <View style={styles.container}>
       <FlatList
-        data={myChats}
-        renderItem={({ item }) => (
-          <View style={styles.item}>
-            <View style={styles.info}>
-              <Text style={styles.title}>{item.title}</Text>
-            </View>
-
-            <Ripple
-              style={styles.link}
-              onPress={() => setRemoveId(item.id)}
-              rippleColor={Colors.black}
-            >
-              <Icon name={Icons.remove} size={24} color={Colors.gray} />
-            </Ripple>
-
-            <Ripple
-              style={styles.link}
-              onPress={() => navigate("Chat", { id: item.id })}
-              rippleColor={Colors.black}
-            >
-              <Icon name={Icons.next} size={24} color={Colors.blue} />
-            </Ripple>
-          </View>
-        )}
+        data={data.viewerChats?.edges}
+        renderItem={({ item }) =>
+          item?.node ? (
+            <ChatItem chatFragment={item.node} onRemove={setRemoveId} />
+          ) : null
+        }
         ListEmptyComponent={() => (
           <View>
             <Spacer height={16} />
@@ -129,7 +151,7 @@ export default function ProfileChat({
             </View>
           </View>
         )}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item?.node.id || ""}
       />
       <TouchableOpacity
         style={styles.create}

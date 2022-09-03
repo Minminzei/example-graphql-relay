@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4dd7263d69e1d0bcdb29409fd553a231>>
+ * @generated SignedSource<<d1a1b790c1da6eb98b8cd374f8758e42>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -10,33 +10,32 @@
 
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
-export type ProfileChatsScreenQuery$variables = {
+export type ProfileChats_list_pagination$variables = {
   after?: string | null;
   first: number;
 };
-export type ProfileChatsScreenQuery$data = {
-  readonly viewer: {
-    readonly " $fragmentSpreads": FragmentRefs<"ProfileChats_viewer">;
-  };
+export type ProfileChats_list_pagination$data = {
   readonly " $fragmentSpreads": FragmentRefs<"ProfileChats_list">;
 };
-export type ProfileChatsScreenQuery = {
-  response: ProfileChatsScreenQuery$data;
-  variables: ProfileChatsScreenQuery$variables;
+export type ProfileChats_list_pagination = {
+  response: ProfileChats_list_pagination$data;
+  variables: ProfileChats_list_pagination$variables;
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = {
-  "defaultValue": null,
-  "kind": "LocalArgument",
-  "name": "after"
-},
-v1 = {
-  "defaultValue": null,
-  "kind": "LocalArgument",
-  "name": "first"
-},
-v2 = [
+var v0 = [
+  {
+    "defaultValue": null,
+    "kind": "LocalArgument",
+    "name": "after"
+  },
+  {
+    "defaultValue": null,
+    "kind": "LocalArgument",
+    "name": "first"
+  }
+],
+v1 = [
   {
     "kind": "Variable",
     "name": "after",
@@ -47,44 +46,18 @@ v2 = [
     "name": "first",
     "variableName": "first"
   }
-],
-v3 = {
-  "alias": null,
-  "args": null,
-  "kind": "ScalarField",
-  "name": "id",
-  "storageKey": null
-};
+];
 return {
   "fragment": {
-    "argumentDefinitions": [
-      (v0/*: any*/),
-      (v1/*: any*/)
-    ],
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Fragment",
     "metadata": null,
-    "name": "ProfileChatsScreenQuery",
+    "name": "ProfileChats_list_pagination",
     "selections": [
       {
-        "args": (v2/*: any*/),
+        "args": (v1/*: any*/),
         "kind": "FragmentSpread",
         "name": "ProfileChats_list"
-      },
-      {
-        "alias": null,
-        "args": null,
-        "concreteType": "User",
-        "kind": "LinkedField",
-        "name": "viewer",
-        "plural": false,
-        "selections": [
-          {
-            "args": null,
-            "kind": "FragmentSpread",
-            "name": "ProfileChats_viewer"
-          }
-        ],
-        "storageKey": null
       }
     ],
     "type": "Query",
@@ -92,16 +65,13 @@ return {
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": [
-      (v1/*: any*/),
-      (v0/*: any*/)
-    ],
+    "argumentDefinitions": (v0/*: any*/),
     "kind": "Operation",
-    "name": "ProfileChatsScreenQuery",
+    "name": "ProfileChats_list_pagination",
     "selections": [
       {
         "alias": null,
-        "args": (v2/*: any*/),
+        "args": (v1/*: any*/),
         "concreteType": "ChatConnectionConnection",
         "kind": "LinkedField",
         "name": "viewerChats",
@@ -123,7 +93,13 @@ return {
                 "name": "node",
                 "plural": false,
                 "selections": [
-                  (v3/*: any*/),
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "id",
+                    "storageKey": null
+                  },
                   {
                     "alias": null,
                     "args": null,
@@ -181,38 +157,26 @@ return {
       },
       {
         "alias": null,
-        "args": (v2/*: any*/),
+        "args": (v1/*: any*/),
         "filters": null,
         "handle": "connection",
         "key": "ProfileChats__viewerChats",
         "kind": "LinkedHandle",
         "name": "viewerChats"
-      },
-      {
-        "alias": null,
-        "args": null,
-        "concreteType": "User",
-        "kind": "LinkedField",
-        "name": "viewer",
-        "plural": false,
-        "selections": [
-          (v3/*: any*/)
-        ],
-        "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "c4d8705ebd2fa23fb855b34bf9740dd8",
+    "cacheID": "8130944a717e3fd1e8563d9b6b962d8d",
     "id": null,
     "metadata": {},
-    "name": "ProfileChatsScreenQuery",
+    "name": "ProfileChats_list_pagination",
     "operationKind": "query",
-    "text": "query ProfileChatsScreenQuery(\n  $first: Int!\n  $after: String\n) {\n  ...ProfileChats_list_2HEEH6\n  viewer {\n    ...ProfileChats_viewer\n    id\n  }\n}\n\nfragment ProfileChatItem_chat on Chat {\n  id\n  title\n}\n\nfragment ProfileChats_list_2HEEH6 on Query {\n  viewerChats(first: $first, after: $after) {\n    edges {\n      node {\n        id\n        ...ProfileChatItem_chat\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment ProfileChats_viewer on User {\n  id\n}\n"
+    "text": "query ProfileChats_list_pagination(\n  $after: String\n  $first: Int!\n) {\n  ...ProfileChats_list_2HEEH6\n}\n\nfragment ProfileChatItem_chat on Chat {\n  id\n  title\n}\n\nfragment ProfileChats_list_2HEEH6 on Query {\n  viewerChats(first: $first, after: $after) {\n    edges {\n      node {\n        id\n        ...ProfileChatItem_chat\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "06f8a7b331d460a5998939ed9da13582";
+(node as any).hash = "015aafad2c1581e2b900f16b0e7de608";
 
 export default node;

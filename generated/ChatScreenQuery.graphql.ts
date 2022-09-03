@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<200fc0b5e16baf2723fad81367837bac>>
+ * @generated SignedSource<<cfc877b5dfccf3446c520056806de6d1>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,11 +11,13 @@
 import { ConcreteRequest, Query } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type ChatScreenQuery$variables = {
+  after?: string | null;
+  first: number;
   id: string;
 };
 export type ChatScreenQuery$data = {
   readonly chat: {
-    readonly " $fragmentSpreads": FragmentRefs<"Chat_detail">;
+    readonly " $fragmentSpreads": FragmentRefs<"Chat_detail" | "Chat_pagination">;
   };
   readonly viewer: {
     readonly " $fragmentSpreads": FragmentRefs<"Chat_viewer">;
@@ -27,21 +29,41 @@ export type ChatScreenQuery = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
-  {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "id"
-  }
-],
-v1 = [
+var v0 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "after"
+},
+v1 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "first"
+},
+v2 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "id"
+},
+v3 = [
   {
     "kind": "Variable",
     "name": "id",
     "variableName": "id"
   }
 ],
-v2 = {
+v4 = [
+  {
+    "kind": "Variable",
+    "name": "after",
+    "variableName": "after"
+  },
+  {
+    "kind": "Variable",
+    "name": "first",
+    "variableName": "first"
+  }
+],
+v5 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -50,14 +72,18 @@ v2 = {
 };
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/),
+      (v2/*: any*/)
+    ],
     "kind": "Fragment",
     "metadata": null,
     "name": "ChatScreenQuery",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v3/*: any*/),
         "concreteType": "Chat",
         "kind": "LinkedField",
         "name": "chat",
@@ -67,6 +93,11 @@ return {
             "args": null,
             "kind": "FragmentSpread",
             "name": "Chat_detail"
+          },
+          {
+            "args": (v4/*: any*/),
+            "kind": "FragmentSpread",
+            "name": "Chat_pagination"
           }
         ],
         "storageKey": null
@@ -93,19 +124,23 @@ return {
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v2/*: any*/),
+      (v1/*: any*/),
+      (v0/*: any*/)
+    ],
     "kind": "Operation",
     "name": "ChatScreenQuery",
     "selections": [
       {
         "alias": null,
-        "args": (v1/*: any*/),
+        "args": (v3/*: any*/),
         "concreteType": "Chat",
         "kind": "LinkedField",
         "name": "chat",
         "plural": false,
         "selections": [
-          (v2/*: any*/),
+          (v5/*: any*/),
           {
             "alias": null,
             "args": null,
@@ -115,41 +150,84 @@ return {
           },
           {
             "alias": null,
-            "args": null,
-            "concreteType": "Post",
+            "args": (v4/*: any*/),
+            "concreteType": "PostConnectionConnection",
             "kind": "LinkedField",
             "name": "posts",
-            "plural": true,
+            "plural": false,
             "selections": [
-              (v2/*: any*/),
               {
                 "alias": null,
                 "args": null,
-                "kind": "ScalarField",
-                "name": "deletedAt",
-                "storageKey": null
-              },
-              {
-                "alias": null,
-                "args": null,
-                "concreteType": "User",
+                "concreteType": "PostConnectionEdge",
                 "kind": "LinkedField",
-                "name": "user",
-                "plural": false,
+                "name": "edges",
+                "plural": true,
                 "selections": [
-                  (v2/*: any*/),
                   {
                     "alias": null,
                     "args": null,
                     "kind": "ScalarField",
-                    "name": "name",
+                    "name": "cursor",
                     "storageKey": null
                   },
                   {
                     "alias": null,
                     "args": null,
-                    "kind": "ScalarField",
-                    "name": "image",
+                    "concreteType": "Post",
+                    "kind": "LinkedField",
+                    "name": "node",
+                    "plural": false,
+                    "selections": [
+                      (v5/*: any*/),
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "content",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "deletedAt",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "concreteType": "User",
+                        "kind": "LinkedField",
+                        "name": "user",
+                        "plural": false,
+                        "selections": [
+                          (v5/*: any*/),
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "name",
+                            "storageKey": null
+                          },
+                          {
+                            "alias": null,
+                            "args": null,
+                            "kind": "ScalarField",
+                            "name": "image",
+                            "storageKey": null
+                          }
+                        ],
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
+                        "kind": "ScalarField",
+                        "name": "__typename",
+                        "storageKey": null
+                      }
+                    ],
                     "storageKey": null
                   }
                 ],
@@ -158,12 +236,39 @@ return {
               {
                 "alias": null,
                 "args": null,
-                "kind": "ScalarField",
-                "name": "content",
+                "concreteType": "PageInfo",
+                "kind": "LinkedField",
+                "name": "pageInfo",
+                "plural": false,
+                "selections": [
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "endCursor",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
+                    "kind": "ScalarField",
+                    "name": "hasNextPage",
+                    "storageKey": null
+                  }
+                ],
                 "storageKey": null
               }
             ],
             "storageKey": null
+          },
+          {
+            "alias": null,
+            "args": (v4/*: any*/),
+            "filters": null,
+            "handle": "connection",
+            "key": "Chat_posts",
+            "kind": "LinkedHandle",
+            "name": "posts"
           }
         ],
         "storageKey": null
@@ -176,23 +281,23 @@ return {
         "name": "viewer",
         "plural": false,
         "selections": [
-          (v2/*: any*/)
+          (v5/*: any*/)
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "7ab6199e238e442fa835138cec40113d",
+    "cacheID": "77bab7bd3495a7bc922ecb361a31a10d",
     "id": null,
     "metadata": {},
     "name": "ChatScreenQuery",
     "operationKind": "query",
-    "text": "query ChatScreenQuery(\n  $id: ID!\n) {\n  chat(id: $id) {\n    ...Chat_detail\n    id\n  }\n  viewer {\n    ...Chat_viewer\n    id\n  }\n}\n\nfragment ChatHeader_owner on Chat {\n  title\n}\n\nfragment ChatMessage_post on Post {\n  id\n  content\n  deletedAt\n  user {\n    id\n    name\n    image\n  }\n}\n\nfragment ChatMessage_viewer on User {\n  id\n}\n\nfragment ChatPost_chat on Chat {\n  id\n}\n\nfragment ChatPost_viewer on User {\n  id\n}\n\nfragment Chat_detail on Chat {\n  id\n  ...ChatHeader_owner\n  ...ChatPost_chat\n  posts {\n    id\n    deletedAt\n    user {\n      id\n    }\n    ...ChatMessage_post\n  }\n}\n\nfragment Chat_viewer on User {\n  ...ChatMessage_viewer\n  ...ChatPost_viewer\n}\n"
+    "text": "query ChatScreenQuery(\n  $id: ID!\n  $first: Int!\n  $after: String\n) {\n  chat(id: $id) {\n    ...Chat_detail\n    ...Chat_pagination_2HEEH6\n    id\n  }\n  viewer {\n    ...Chat_viewer\n    id\n  }\n}\n\nfragment ChatHeader_owner on Chat {\n  title\n}\n\nfragment ChatMessage_chat on Chat {\n  id\n}\n\nfragment ChatMessage_post on Post {\n  id\n  content\n  deletedAt\n  user {\n    id\n    name\n    image\n  }\n}\n\nfragment ChatMessage_viewer on User {\n  id\n}\n\nfragment ChatPost_chat on Chat {\n  id\n}\n\nfragment ChatPost_viewer on User {\n  id\n}\n\nfragment Chat_detail on Chat {\n  id\n  ...ChatMessage_chat\n  ...ChatHeader_owner\n  ...ChatPost_chat\n}\n\nfragment Chat_pagination_2HEEH6 on Chat {\n  posts(first: $first, after: $after) {\n    edges {\n      cursor\n      node {\n        id\n        ...ChatMessage_post\n        __typename\n      }\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment Chat_viewer on User {\n  ...ChatMessage_viewer\n  ...ChatPost_viewer\n}\n"
   }
 };
 })();
 
-(node as any).hash = "b7943e118fd44f829815fa497ed8c3c3";
+(node as any).hash = "017f809b8feefcadece49e2ef24202f5";
 
 export default node;

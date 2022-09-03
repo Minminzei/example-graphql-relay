@@ -6,8 +6,8 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
 } from "graphql";
-import { decode } from "@api/convertId";
-import { PostType, PostModel } from "@api/types/post";
+import fromGlobalId from "@api/fromGlobalId";
+import { PostModel, PostEdgeType, PostEdgeModel } from "@api/types/post";
 import prisma from "@database/lib";
 import ErrorType from "@api/types/error";
 
@@ -17,14 +17,18 @@ interface CreatePostInput {
   content: string;
 }
 
-type Result = PostModel | ErrorType;
+type Result =
+  | {
+      postEdges: PostEdgeModel;
+    }
+  | ErrorType;
 
 const createPostInput = new GraphQLInputObjectType({
   name: "CreatePostInput",
   fields: {
     chat_id: { type: new GraphQLNonNull(GraphQLID) },
     user_id: { type: new GraphQLNonNull(GraphQLID) },
-    title: { type: new GraphQLNonNull(GraphQLString) },
+    content: { type: new GraphQLNonNull(GraphQLString) },
   },
 });
 
@@ -33,8 +37,8 @@ async function create(data: CreatePostInput): Promise<Result> {
     const { id } = await prisma.post.create({
       data: {
         content: data.content,
-        user_id: decode(data.user_id),
-        chat_id: decode(data.chat_id),
+        user_id: fromGlobalId(data.user_id),
+        chat_id: fromGlobalId(data.chat_id),
       },
     });
     const post = await prisma.post.findUnique({
@@ -46,7 +50,13 @@ async function create(data: CreatePostInput): Promise<Result> {
     if (!post) {
       throw new Error("メッセージを投稿できませんでした");
     }
-    return new PostModel(post);
+
+    return {
+      postEdges: new PostEdgeModel({
+        node: new PostModel(post),
+        cursor: id,
+      }),
+    };
   } catch (e: any) {
     return {
       message: e.message,
@@ -54,26 +64,34 @@ async function create(data: CreatePostInput): Promise<Result> {
   }
 }
 
-const PostCreatedErrorType = new GraphQLObjectType({
-  name: "PostCreatedError",
-  fields: {
-    message: { type: new GraphQLNonNull(GraphQLString) },
-  },
-});
-
-const PostCreatedResultType = new GraphQLUnionType({
-  name: "PostCreatedResult",
-  types: [PostType, PostCreatedErrorType],
-  resolveType: (value) => {
-    if (value instanceof PostModel) {
-      return "Post";
-    }
-    return "PostCreatedError";
-  },
-});
-
-const createPost = {
-  type: new GraphQLNonNull(PostCreatedResultType),
+export default {
+  type: new GraphQLNonNull(
+    new GraphQLUnionType({
+      name: "CreatePostResult",
+      types: [
+        new GraphQLObjectType({
+          name: "PostEdges",
+          fields: {
+            postEdges: {
+              type: PostEdgeType,
+            },
+          },
+        }),
+        new GraphQLObjectType({
+          name: "CreatePostError",
+          fields: {
+            message: { type: new GraphQLNonNull(GraphQLString) },
+          },
+        }),
+      ],
+      resolveType: (value) => {
+        if (value.postEdges instanceof PostEdgeModel) {
+          return "PostEdges";
+        }
+        return "CreatePostError";
+      },
+    })
+  ),
   args: {
     input: { type: new GraphQLNonNull(createPostInput) },
   },
@@ -84,5 +102,3 @@ const createPost = {
     });
   },
 };
-
-export default createPost;

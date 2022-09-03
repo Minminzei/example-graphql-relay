@@ -1,14 +1,20 @@
-import React, { useState } from "react";
-import { StyleSheet, Alert } from "react-native";
+import React, { useState, useRef } from "react";
+import { StyleSheet } from "react-native";
 import { View } from "@components/atoms/Themed";
-import { useFragment, useMutation, graphql } from "react-relay/hooks";
+import {
+  useFragment,
+  useMutation,
+  graphql,
+  ConnectionHandler,
+} from "react-relay/hooks";
 import Colors from "@constants/Colors";
 import Spacer from "@components/atoms/Spacer";
-import TextInput from "@components/atoms/TextInput";
+import TextInput, { TextInputRef } from "@components/atoms/TextInput";
 import Button from "@components/atoms/Button";
 import { ChatPostMutation } from "@generated/ChatPostMutation.graphql";
 import { ChatPost_chat$key } from "@generated/ChatPost_chat.graphql";
 import { ChatPost_viewer$key } from "@generated/ChatPost_viewer.graphql";
+import message, { MessageData } from "@recoil/message";
 
 const chatPostViewerQuery = graphql`
   fragment ChatPost_viewer on User {
@@ -23,19 +29,23 @@ const chatPostChatQuery = graphql`
 `;
 
 const chatPostMutation = graphql`
-  mutation ChatPostMutation($input: CreatePostInput!) {
+  mutation ChatPostMutation($input: CreatePostInput!, $connections: [ID!]!) {
     createPost(input: $input) {
       __typename
-      ... on Post {
-        id
-        content
-        deletedAt
-        user {
-          name
-          image
+      ... on PostEdges {
+        postEdges @prependEdge(connections: $connections) {
+          cursor
+          node {
+            id
+            content
+            user {
+              name
+              image
+            }
+          }
         }
       }
-      ... on PostCreatedError {
+      ... on CreatePostError {
         message
       }
     }
@@ -45,50 +55,69 @@ const chatPostMutation = graphql`
 export default function ChatPost({
   viewerFragmen,
   chatFragment,
+  onPost,
 }: {
   viewerFragmen: ChatPost_viewer$key;
   chatFragment: ChatPost_chat$key;
+  onPost: () => void;
 }) {
+  const textRef = useRef<TextInputRef>();
   const { id: viewerId } = useFragment(chatPostViewerQuery, viewerFragmen);
   const { id: chatId } = useFragment(chatPostChatQuery, chatFragment);
 
   const [commit] = useMutation<ChatPostMutation>(chatPostMutation);
   const [loading, setLoading] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>("");
+  const [content, setContent] = useState<string>("");
+  const { set: setMessage } = message();
 
   async function save(): Promise<void> {
     if (!message) {
       return;
     }
     setLoading(true);
+    const connectionId = ConnectionHandler.getConnectionID(
+      chatId,
+      "Chat_posts"
+    );
+
     await new Promise<void>((resolve) => {
       commit({
         variables: {
           input: {
             chat_id: chatId,
             user_id: viewerId,
-            title: message,
+            content,
           },
+          connections: [connectionId],
         },
         onCompleted({ createPost }) {
-          if (createPost.__typename === "PostCreatedError") {
-            Alert.alert(createPost.message);
+          if (createPost.__typename === "CreatePostError") {
+            setMessage(
+              new MessageData({
+                message: createPost.message,
+                error: true,
+              })
+            );
           }
           resolve();
         },
       });
     });
+    textRef.current?.clear();
+    setContent("");
     setLoading(false);
+    onPost();
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.field}>
         <TextInput
-          initialValue={message}
-          onChange={(value: string) => setMessage(value)}
+          initialValue={content}
+          onChange={(value: string) => setContent(value)}
           placeholder="メッセージを書く"
           multiline
+          innerRef={textRef}
         />
       </View>
 

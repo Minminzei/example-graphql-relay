@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useImperativeHandle } from "react";
 import {
   TextInput as Input,
   TextStyle,
@@ -121,6 +121,11 @@ type Props = {
   style?: TextStyle;
   multiline?: boolean;
   numberOfLines?: number;
+  innerRef?: React.MutableRefObject<any>;
+};
+
+export type TextInputRef = {
+  clear: () => void;
 };
 
 export default function TextInput({
@@ -134,6 +139,7 @@ export default function TextInput({
   style,
   multiline = false,
   numberOfLines,
+  innerRef,
 }: Props): JSX.Element {
   const initialHeight = initialHeightForMultipleLine(numberOfLines);
   const [dynamicHeight, setHeight] = useState<number>(initialHeight);
@@ -145,6 +151,13 @@ export default function TextInput({
     setValue(changeValue);
     onChange(covert(changeValue, type));
   }
+
+  useImperativeHandle(innerRef, () => ({
+    clear() {
+      setValue("");
+    },
+  }));
+
   return (
     <View style={styles.container}>
       {label && (
@@ -153,6 +166,7 @@ export default function TextInput({
         </View>
       )}
       <Input
+        ref={innerRef}
         keyboardType={KeyboardTypeMap[type][Platform.OS]}
         secureTextEntry={type === "password"}
         editable={!disabled}

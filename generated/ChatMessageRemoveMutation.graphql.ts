@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<48a90c2ec0e3e6af92cbe674fcac0b25>>
+ * @generated SignedSource<<15bada451341b3160ce90320468be607>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,16 +14,16 @@ export type RemovePostInput = {
   user_id: string;
 };
 export type ChatMessageRemoveMutation$variables = {
+  connections: ReadonlyArray<string>;
   input: RemovePostInput;
 };
 export type ChatMessageRemoveMutation$data = {
   readonly removePost: {
-    readonly __typename: "Post";
-    readonly deletedAt: string | null;
-    readonly id: string;
-  } | {
     readonly __typename: "PostRemovedError";
     readonly message: string;
+  } | {
+    readonly __typename: "RemovePostId";
+    readonly removePostId: string;
   } | {
     // This will never be '%other', but we need some
     // value in case none of the concrete values match.
@@ -36,102 +36,145 @@ export type ChatMessageRemoveMutation = {
 };
 
 const node: ConcreteRequest = (function(){
-var v0 = [
+var v0 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "connections"
+},
+v1 = {
+  "defaultValue": null,
+  "kind": "LocalArgument",
+  "name": "input"
+},
+v2 = [
   {
-    "defaultValue": null,
-    "kind": "LocalArgument",
-    "name": "input"
+    "kind": "Variable",
+    "name": "input",
+    "variableName": "input"
   }
 ],
-v1 = [
-  {
-    "alias": null,
-    "args": [
-      {
-        "kind": "Variable",
-        "name": "input",
-        "variableName": "input"
-      }
-    ],
-    "concreteType": null,
-    "kind": "LinkedField",
-    "name": "removePost",
-    "plural": false,
-    "selections": [
-      {
-        "alias": null,
-        "args": null,
-        "kind": "ScalarField",
-        "name": "__typename",
-        "storageKey": null
-      },
-      {
-        "kind": "InlineFragment",
-        "selections": [
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "id",
-            "storageKey": null
-          },
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "deletedAt",
-            "storageKey": null
-          }
-        ],
-        "type": "Post",
-        "abstractKey": null
-      },
-      {
-        "kind": "InlineFragment",
-        "selections": [
-          {
-            "alias": null,
-            "args": null,
-            "kind": "ScalarField",
-            "name": "message",
-            "storageKey": null
-          }
-        ],
-        "type": "PostRemovedError",
-        "abstractKey": null
-      }
-    ],
-    "storageKey": null
-  }
-];
+v3 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "__typename",
+  "storageKey": null
+},
+v4 = {
+  "alias": null,
+  "args": null,
+  "kind": "ScalarField",
+  "name": "removePostId",
+  "storageKey": null
+},
+v5 = {
+  "kind": "InlineFragment",
+  "selections": [
+    {
+      "alias": null,
+      "args": null,
+      "kind": "ScalarField",
+      "name": "message",
+      "storageKey": null
+    }
+  ],
+  "type": "PostRemovedError",
+  "abstractKey": null
+};
 return {
   "fragment": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v0/*: any*/),
+      (v1/*: any*/)
+    ],
     "kind": "Fragment",
     "metadata": null,
     "name": "ChatMessageRemoveMutation",
-    "selections": (v1/*: any*/),
+    "selections": [
+      {
+        "alias": null,
+        "args": (v2/*: any*/),
+        "concreteType": null,
+        "kind": "LinkedField",
+        "name": "removePost",
+        "plural": false,
+        "selections": [
+          (v3/*: any*/),
+          {
+            "kind": "InlineFragment",
+            "selections": [
+              (v4/*: any*/)
+            ],
+            "type": "RemovePostId",
+            "abstractKey": null
+          },
+          (v5/*: any*/)
+        ],
+        "storageKey": null
+      }
+    ],
     "type": "Mutation",
     "abstractKey": null
   },
   "kind": "Request",
   "operation": {
-    "argumentDefinitions": (v0/*: any*/),
+    "argumentDefinitions": [
+      (v1/*: any*/),
+      (v0/*: any*/)
+    ],
     "kind": "Operation",
     "name": "ChatMessageRemoveMutation",
-    "selections": (v1/*: any*/)
+    "selections": [
+      {
+        "alias": null,
+        "args": (v2/*: any*/),
+        "concreteType": null,
+        "kind": "LinkedField",
+        "name": "removePost",
+        "plural": false,
+        "selections": [
+          (v3/*: any*/),
+          {
+            "kind": "InlineFragment",
+            "selections": [
+              (v4/*: any*/),
+              {
+                "alias": null,
+                "args": null,
+                "filters": null,
+                "handle": "deleteEdge",
+                "key": "",
+                "kind": "ScalarHandle",
+                "name": "removePostId",
+                "handleArgs": [
+                  {
+                    "kind": "Variable",
+                    "name": "connections",
+                    "variableName": "connections"
+                  }
+                ]
+              }
+            ],
+            "type": "RemovePostId",
+            "abstractKey": null
+          },
+          (v5/*: any*/)
+        ],
+        "storageKey": null
+      }
+    ]
   },
   "params": {
-    "cacheID": "ec242c05c44b0db2bbb95cf3e29db8c6",
+    "cacheID": "95181d170913370c860fc36748091327",
     "id": null,
     "metadata": {},
     "name": "ChatMessageRemoveMutation",
     "operationKind": "mutation",
-    "text": "mutation ChatMessageRemoveMutation(\n  $input: RemovePostInput!\n) {\n  removePost(input: $input) {\n    __typename\n    ... on Post {\n      id\n      deletedAt\n    }\n    ... on PostRemovedError {\n      message\n    }\n  }\n}\n"
+    "text": "mutation ChatMessageRemoveMutation(\n  $input: RemovePostInput!\n) {\n  removePost(input: $input) {\n    __typename\n    ... on RemovePostId {\n      removePostId\n    }\n    ... on PostRemovedError {\n      message\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "ae28d21a9aeb8767c2c1990b51f504ab";
+(node as any).hash = "535827b588d2e30d97d90b0faa7dc376";
 
 export default node;
