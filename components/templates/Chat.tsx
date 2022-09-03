@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { StyleSheet, FlatList } from "react-native";
 import { View } from "@components/atoms/Themed";
 import { useFragment, usePaginationFragment, graphql } from "react-relay/hooks";
@@ -113,11 +113,6 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   paging: {
-    // position: "absolute",
-    // bottom: 0,
-    // left: 0,
-    // zIndex: 1,
-    // width: "100%",
     paddingVertical: 12,
   },
 });

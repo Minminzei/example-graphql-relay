@@ -50,10 +50,10 @@ async function fetchRelay(params: RequestParameters, variables: any) {
   return fetchGraphQL(<string>params.text, variables);
 }
 
-const storeObject = new Store(new RecordSource());
+// const storeObject = new Store(new RecordSource());
 
 // Export a singleton instance of Relay Environment configured with our network function:
 export default new Environment({
   network: Network.create(fetchRelay),
-  store: storeObject,
+  store: new Store(new RecordSource()),
 });
