@@ -102,9 +102,6 @@ export default function ChatCreate({
           }
           resolve();
         },
-        onError(e) {
-          console.error;
-        },
       });
     });
   }

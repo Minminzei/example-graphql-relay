@@ -196,6 +196,29 @@ async function main() {
       },
     },
   });
+
+  await prisma.chat.create({
+    data: {
+      user_id: user1.id,
+      title: "My Channel",
+      posts: {
+        create: [
+          {
+            user_id: user1.id,
+            content: "Welcome!!",
+          },
+          {
+            user_id: user4.id,
+            content: "hi!",
+          },
+          {
+            user_id: user2.id,
+            content: "🥰",
+          },
+        ],
+      },
+    },
+  });
 }
 
 main()

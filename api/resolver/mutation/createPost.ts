@@ -54,7 +54,7 @@ async function create(data: CreatePostInput): Promise<Result> {
     return {
       postEdges: new PostEdgeModel({
         node: new PostModel(post),
-        cursor: 10,
+        cursor: id,
       }),
     };
   } catch (e: any) {

@@ -3,11 +3,11 @@ import prisma from "@database/lib";
 import guestId from "@api/guestId";
 import { UserModel, UserType } from "@api/types/user";
 
-async function get(id: number): Promise<UserModel> {
+async function get(): Promise<UserModel> {
   try {
     const user = await prisma.user.findUnique({
       where: {
-        id,
+        id: guestId,
       },
       include: { chats: true },
     });
@@ -25,7 +25,7 @@ export default {
   resolve(): Promise<UserModel> {
     return new Promise(async (resolve, reject) => {
       try {
-        const result = await get(guestId);
+        const result = await get();
         resolve(result);
       } catch (e) {
         reject(e);

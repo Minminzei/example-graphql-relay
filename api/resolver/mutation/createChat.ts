@@ -49,9 +49,10 @@ async function create(data: CreateChatInput): Promise<Result> {
     if (!chat) {
       throw new Error("チャットを作成できませんでした");
     }
+
     return {
       chatEdges: new ChatEdgeModel({
-        cursor: 10,
+        cursor: id,
         node: new ChatModel(chat),
       }),
     };

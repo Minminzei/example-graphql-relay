@@ -55,9 +55,11 @@ const chatPostMutation = graphql`
 export default function ChatPost({
   viewerFragmen,
   chatFragment,
+  onPost,
 }: {
   viewerFragmen: ChatPost_viewer$key;
   chatFragment: ChatPost_chat$key;
+  onPost: () => void;
 }) {
   const textRef = useRef<TextInputRef>();
   const { id: viewerId } = useFragment(chatPostViewerQuery, viewerFragmen);
@@ -104,6 +106,7 @@ export default function ChatPost({
     textRef.current?.clear();
     setContent("");
     setLoading(false);
+    onPost();
   }
 
   return (

@@ -1,5 +1,6 @@
 import { GraphQLNonNull, GraphQLID, GraphQLInterfaceType } from "graphql";
 import { ChatModel } from "@api/types/chat";
+import { UserModel } from "@api/types/user";
 
 export default new GraphQLInterfaceType({
   name: "Node",
@@ -11,6 +12,8 @@ export default new GraphQLInterfaceType({
   resolveType: (value) => {
     if (value instanceof ChatModel) {
       return "Chat";
+    } else if (value instanceof UserModel) {
+      return "User";
     }
   },
 });

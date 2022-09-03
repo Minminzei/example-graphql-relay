@@ -60,6 +60,7 @@ export default function Chat({
   const chat = useFragment(chatQuery, chatFragment);
   const viewer = useFragment<Chat_viewer$key>(chatViewerQuery, viewerFragment);
   const [paging, setPaging] = useState<boolean>(false);
+  let flatList: FlatList;
 
   return (
     <View style={styles.container}>
@@ -71,6 +72,11 @@ export default function Chat({
       )}
       <FlatList
         data={data.posts?.edges}
+        ref={(ref) => {
+          if (ref) {
+            flatList = ref;
+          }
+        }}
         renderItem={({ item }) =>
           item && (
             <>
@@ -98,7 +104,13 @@ export default function Chat({
           }
         }}
       />
-      <Post chatFragment={chat} viewerFragmen={viewer} />
+      <Post
+        chatFragment={chat}
+        viewerFragmen={viewer}
+        onPost={() => {
+          flatList?.scrollToOffset({ offset: 0, animated: false });
+        }}
+      />
     </View>
   );
 }
