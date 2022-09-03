@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<141e9525c22976ca832789448ada8b1e>>
+ * @generated SignedSource<<cfc877b5dfccf3446c520056806de6d1>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -167,6 +167,13 @@ return {
                   {
                     "alias": null,
                     "args": null,
+                    "kind": "ScalarField",
+                    "name": "cursor",
+                    "storageKey": null
+                  },
+                  {
+                    "alias": null,
+                    "args": null,
                     "concreteType": "Post",
                     "kind": "LinkedField",
                     "name": "node",
@@ -221,13 +228,6 @@ return {
                         "storageKey": null
                       }
                     ],
-                    "storageKey": null
-                  },
-                  {
-                    "alias": null,
-                    "args": null,
-                    "kind": "ScalarField",
-                    "name": "cursor",
                     "storageKey": null
                   }
                 ],
@@ -288,12 +288,12 @@ return {
     ]
   },
   "params": {
-    "cacheID": "024630985f5bd0789d7f6e245d2a0d99",
+    "cacheID": "77bab7bd3495a7bc922ecb361a31a10d",
     "id": null,
     "metadata": {},
     "name": "ChatScreenQuery",
     "operationKind": "query",
-    "text": "query ChatScreenQuery(\n  $id: ID!\n  $first: Int!\n  $after: String\n) {\n  chat(id: $id) {\n    ...Chat_detail\n    ...Chat_pagination_2HEEH6\n    id\n  }\n  viewer {\n    ...Chat_viewer\n    id\n  }\n}\n\nfragment ChatHeader_owner on Chat {\n  title\n}\n\nfragment ChatMessage_chat on Chat {\n  id\n}\n\nfragment ChatMessage_post on Post {\n  id\n  content\n  deletedAt\n  user {\n    id\n    name\n    image\n  }\n}\n\nfragment ChatMessage_viewer on User {\n  id\n}\n\nfragment ChatPost_chat on Chat {\n  id\n}\n\nfragment ChatPost_viewer on User {\n  id\n}\n\nfragment Chat_detail on Chat {\n  id\n  ...ChatMessage_chat\n  ...ChatHeader_owner\n  ...ChatPost_chat\n}\n\nfragment Chat_pagination_2HEEH6 on Chat {\n  posts(after: $after, first: $first) {\n    edges {\n      node {\n        id\n        ...ChatMessage_post\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment Chat_viewer on User {\n  ...ChatMessage_viewer\n  ...ChatPost_viewer\n}\n"
+    "text": "query ChatScreenQuery(\n  $id: ID!\n  $first: Int!\n  $after: String\n) {\n  chat(id: $id) {\n    ...Chat_detail\n    ...Chat_pagination_2HEEH6\n    id\n  }\n  viewer {\n    ...Chat_viewer\n    id\n  }\n}\n\nfragment ChatHeader_owner on Chat {\n  title\n}\n\nfragment ChatMessage_chat on Chat {\n  id\n}\n\nfragment ChatMessage_post on Post {\n  id\n  content\n  deletedAt\n  user {\n    id\n    name\n    image\n  }\n}\n\nfragment ChatMessage_viewer on User {\n  id\n}\n\nfragment ChatPost_chat on Chat {\n  id\n}\n\nfragment ChatPost_viewer on User {\n  id\n}\n\nfragment Chat_detail on Chat {\n  id\n  ...ChatMessage_chat\n  ...ChatHeader_owner\n  ...ChatPost_chat\n}\n\nfragment Chat_pagination_2HEEH6 on Chat {\n  posts(first: $first, after: $after) {\n    edges {\n      cursor\n      node {\n        id\n        ...ChatMessage_post\n        __typename\n      }\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n\nfragment Chat_viewer on User {\n  ...ChatMessage_viewer\n  ...ChatPost_viewer\n}\n"
   }
 };
 })();

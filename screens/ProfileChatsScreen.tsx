@@ -13,9 +13,8 @@ import { ProfileChatsScreenQuery } from "@generated/ProfileChatsScreenQuery.grap
 import ProfileChats from "@components/templates/ProfileChats";
 
 const profileScreenQuery = graphql`
-  query ProfileChatsScreenQuery($first: Int!, $after: String, $user_id: ID!) {
-    ...ProfileChats_list
-      @arguments(first: $first, after: $after, user_id: $user_id)
+  query ProfileChatsScreenQuery($first: Int!, $after: String) {
+    ...ProfileChats_list @arguments(first: $first, after: $after)
     viewer {
       ...ProfileChats_viewer
     }
@@ -39,7 +38,7 @@ export default function ProfileChatsScreen() {
     useQueryLoader<ProfileChatsScreenQuery>(profileScreenQuery);
 
   React.useEffect(() => {
-    loadQuery({ first: PagingChats, user_id: "VXNlcjox" });
+    loadQuery({ first: PagingChats });
     return () => {
       disposeQuery();
     };

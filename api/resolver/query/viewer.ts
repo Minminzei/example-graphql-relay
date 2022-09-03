@@ -9,6 +9,7 @@ async function get(id: number): Promise<UserModel> {
       where: {
         id,
       },
+      include: { chats: true },
     });
     if (!user || user.deletedAt) {
       throw new Error("Not Found");

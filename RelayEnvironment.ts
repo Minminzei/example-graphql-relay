@@ -8,7 +8,7 @@ import {
   RequestParameters,
   Variables,
 } from "relay-runtime";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 
 const axiosInstance = axios.create({
   headers: {
@@ -50,8 +50,10 @@ async function fetchRelay(params: RequestParameters, variables: any) {
   return fetchGraphQL(<string>params.text, variables);
 }
 
+const storeObject = new Store(new RecordSource());
+
 // Export a singleton instance of Relay Environment configured with our network function:
 export default new Environment({
   network: Network.create(fetchRelay),
-  store: new Store(new RecordSource()),
+  store: storeObject,
 });

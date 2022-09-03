@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<d59be121aa1db08f4b7e25ff5e5e778f>>
+ * @generated SignedSource<<4dd7263d69e1d0bcdb29409fd553a231>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -13,7 +13,6 @@ import { FragmentRefs } from "relay-runtime";
 export type ProfileChatsScreenQuery$variables = {
   after?: string | null;
   first: number;
-  user_id: string;
 };
 export type ProfileChatsScreenQuery$data = {
   readonly viewer: {
@@ -37,12 +36,7 @@ v1 = {
   "kind": "LocalArgument",
   "name": "first"
 },
-v2 = {
-  "defaultValue": null,
-  "kind": "LocalArgument",
-  "name": "user_id"
-},
-v3 = [
+v2 = [
   {
     "kind": "Variable",
     "name": "after",
@@ -52,14 +46,9 @@ v3 = [
     "kind": "Variable",
     "name": "first",
     "variableName": "first"
-  },
-  {
-    "kind": "Variable",
-    "name": "user_id",
-    "variableName": "user_id"
   }
 ],
-v4 = {
+v3 = {
   "alias": null,
   "args": null,
   "kind": "ScalarField",
@@ -70,15 +59,14 @@ return {
   "fragment": {
     "argumentDefinitions": [
       (v0/*: any*/),
-      (v1/*: any*/),
-      (v2/*: any*/)
+      (v1/*: any*/)
     ],
     "kind": "Fragment",
     "metadata": null,
     "name": "ProfileChatsScreenQuery",
     "selections": [
       {
-        "args": (v3/*: any*/),
+        "args": (v2/*: any*/),
         "kind": "FragmentSpread",
         "name": "ProfileChats_list"
       },
@@ -106,18 +94,17 @@ return {
   "operation": {
     "argumentDefinitions": [
       (v1/*: any*/),
-      (v0/*: any*/),
-      (v2/*: any*/)
+      (v0/*: any*/)
     ],
     "kind": "Operation",
     "name": "ProfileChatsScreenQuery",
     "selections": [
       {
         "alias": null,
-        "args": (v3/*: any*/),
+        "args": (v2/*: any*/),
         "concreteType": "ChatConnectionConnection",
         "kind": "LinkedField",
-        "name": "chats",
+        "name": "viewerChats",
         "plural": false,
         "selections": [
           {
@@ -136,7 +123,7 @@ return {
                 "name": "node",
                 "plural": false,
                 "selections": [
-                  (v4/*: any*/),
+                  (v3/*: any*/),
                   {
                     "alias": null,
                     "args": null,
@@ -194,14 +181,12 @@ return {
       },
       {
         "alias": null,
-        "args": (v3/*: any*/),
-        "filters": [
-          "user_id"
-        ],
+        "args": (v2/*: any*/),
+        "filters": null,
         "handle": "connection",
-        "key": "ProfileChats_chats",
+        "key": "ProfileChats__viewerChats",
         "kind": "LinkedHandle",
-        "name": "chats"
+        "name": "viewerChats"
       },
       {
         "alias": null,
@@ -211,23 +196,23 @@ return {
         "name": "viewer",
         "plural": false,
         "selections": [
-          (v4/*: any*/)
+          (v3/*: any*/)
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "a00069ce9512ae2007eee733ee07096b",
+    "cacheID": "c4d8705ebd2fa23fb855b34bf9740dd8",
     "id": null,
     "metadata": {},
     "name": "ProfileChatsScreenQuery",
     "operationKind": "query",
-    "text": "query ProfileChatsScreenQuery(\n  $first: Int!\n  $after: String\n  $user_id: ID!\n) {\n  ...ProfileChats_list_4n34ss\n  viewer {\n    ...ProfileChats_viewer\n    id\n  }\n}\n\nfragment ProfileChatItem_chat on Chat {\n  id\n  title\n}\n\nfragment ProfileChats_list_4n34ss on Query {\n  chats(first: $first, after: $after, user_id: $user_id) {\n    edges {\n      node {\n        id\n        ...ProfileChatItem_chat\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment ProfileChats_viewer on User {\n  id\n}\n"
+    "text": "query ProfileChatsScreenQuery(\n  $first: Int!\n  $after: String\n) {\n  ...ProfileChats_list_2HEEH6\n  viewer {\n    ...ProfileChats_viewer\n    id\n  }\n}\n\nfragment ProfileChatItem_chat on Chat {\n  id\n  title\n}\n\nfragment ProfileChats_list_2HEEH6 on Query {\n  viewerChats(first: $first, after: $after) {\n    edges {\n      node {\n        id\n        ...ProfileChatItem_chat\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n}\n\nfragment ProfileChats_viewer on User {\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "d2240397d7462d309049527c12370137";
+(node as any).hash = "06f8a7b331d460a5998939ed9da13582";
 
 export default node;

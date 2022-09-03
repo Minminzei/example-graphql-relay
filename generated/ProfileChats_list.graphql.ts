@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<313e1f3cf3221ba4fbec95a855ccc80c>>
+ * @generated SignedSource<<23fabe8174d2baeb87302319fdad60e0>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -11,7 +11,7 @@
 import { ReaderFragment, RefetchableFragment } from 'relay-runtime';
 import { FragmentRefs } from "relay-runtime";
 export type ProfileChats_list$data = {
-  readonly chats: {
+  readonly viewerChats: {
     readonly edges: ReadonlyArray<{
       readonly node: {
         readonly id: string;
@@ -28,7 +28,7 @@ export type ProfileChats_list$key = {
 
 const node: ReaderFragment = (function(){
 var v0 = [
-  "chats"
+  "viewerChats"
 ];
 return {
   "argumentDefinitions": [
@@ -41,11 +41,6 @@ return {
       "defaultValue": null,
       "kind": "LocalArgument",
       "name": "first"
-    },
-    {
-      "defaultValue": null,
-      "kind": "LocalArgument",
-      "name": "user_id"
     }
   ],
   "kind": "Fragment",
@@ -74,17 +69,11 @@ return {
   "name": "ProfileChats_list",
   "selections": [
     {
-      "alias": "chats",
-      "args": [
-        {
-          "kind": "Variable",
-          "name": "user_id",
-          "variableName": "user_id"
-        }
-      ],
+      "alias": "viewerChats",
+      "args": null,
       "concreteType": "ChatConnectionConnection",
       "kind": "LinkedField",
-      "name": "__ProfileChats_chats_connection",
+      "name": "__ProfileChats__viewerChats_connection",
       "plural": false,
       "selections": [
         {
@@ -169,6 +158,6 @@ return {
 };
 })();
 
-(node as any).hash = "639acb7cbf8fb47f1b589b3c79ad5b85";
+(node as any).hash = "015aafad2c1581e2b900f16b0e7de608";
 
 export default node;

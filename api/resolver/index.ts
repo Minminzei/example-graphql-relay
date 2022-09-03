@@ -4,6 +4,7 @@ import user from "@api/resolver/query/user";
 import chat from "@api/resolver/query/chat";
 import chats from "@api/resolver/query/chats";
 import viewer from "@api/resolver/query/viewer";
+import viewerChats from "@api/resolver/query/viewerChats";
 import updateProfile from "@api/resolver/mutation/updateProfile";
 import createChat from "@api/resolver/mutation/createChat";
 import removeChat from "@api/resolver/mutation/removeChat";
@@ -18,6 +19,7 @@ const query = new GraphQLObjectType({
     chat,
     chats,
     viewer,
+    viewerChats,
   },
 });
 

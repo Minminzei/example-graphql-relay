@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { StyleSheet } from "react-native";
 import { View } from "@components/atoms/Themed";
 import {
@@ -9,7 +9,7 @@ import {
 } from "react-relay/hooks";
 import Colors from "@constants/Colors";
 import Spacer from "@components/atoms/Spacer";
-import TextInput from "@components/atoms/TextInput";
+import TextInput, { TextInputRef } from "@components/atoms/TextInput";
 import Button from "@components/atoms/Button";
 import { ChatPostMutation } from "@generated/ChatPostMutation.graphql";
 import { ChatPost_chat$key } from "@generated/ChatPost_chat.graphql";
@@ -59,6 +59,7 @@ export default function ChatPost({
   viewerFragmen: ChatPost_viewer$key;
   chatFragment: ChatPost_chat$key;
 }) {
+  const textRef = useRef<TextInputRef>();
   const { id: viewerId } = useFragment(chatPostViewerQuery, viewerFragmen);
   const { id: chatId } = useFragment(chatPostChatQuery, chatFragment);
 
@@ -96,11 +97,12 @@ export default function ChatPost({
               })
             );
           }
-          setContent("");
           resolve();
         },
       });
     });
+    textRef.current?.clear();
+    setContent("");
     setLoading(false);
   }
 
@@ -112,6 +114,7 @@ export default function ChatPost({
           onChange={(value: string) => setContent(value)}
           placeholder="メッセージを書く"
           multiline
+          innerRef={textRef}
         />
       </View>
 

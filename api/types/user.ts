@@ -5,7 +5,7 @@ import {
   GraphQLID,
 } from "graphql";
 import { toGlobalId } from "graphql-relay";
-import type { User, Chat } from "@prisma/client";
+import type { User } from "@prisma/client";
 
 const UserType: GraphQLObjectType = new GraphQLObjectType({
   name: "User",

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<0ee62437f791ffcff13d96af0c1e8c5b>>
+ * @generated SignedSource<<e3837210b05d62272e36c614abc57f07>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -14,11 +14,12 @@ export type Chat_pagination$data = {
   readonly id: string;
   readonly posts: {
     readonly edges: ReadonlyArray<{
+      readonly cursor: string;
       readonly node: {
         readonly id: string;
         readonly " $fragmentSpreads": FragmentRefs<"ChatMessage_post">;
       };
-    } | null> | null;
+    }>;
   } | null;
   readonly " $fragmentType": "Chat_pagination";
 };
@@ -98,6 +99,13 @@ return {
             {
               "alias": null,
               "args": null,
+              "kind": "ScalarField",
+              "name": "cursor",
+              "storageKey": null
+            },
+            {
+              "alias": null,
+              "args": null,
               "concreteType": "Post",
               "kind": "LinkedField",
               "name": "node",
@@ -117,13 +125,6 @@ return {
                   "storageKey": null
                 }
               ],
-              "storageKey": null
-            },
-            {
-              "alias": null,
-              "args": null,
-              "kind": "ScalarField",
-              "name": "cursor",
               "storageKey": null
             }
           ],
@@ -164,6 +165,6 @@ return {
 };
 })();
 
-(node as any).hash = "87680ce5a40ec15d1a4bcbf760071f4a";
+(node as any).hash = "cf75fab9e85a17ae177ea0ada900c66a";
 
 export default node;

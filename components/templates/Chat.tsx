@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, FlatList } from "react-native";
 import { View } from "@components/atoms/Themed";
 import { useFragment, usePaginationFragment, graphql } from "react-relay/hooks";
@@ -24,9 +24,10 @@ const chatQuery = graphql`
 const chatMessagePostQuery = graphql`
   fragment Chat_pagination on Chat
   @refetchable(queryName: "Chat_pagination_query")
-  @argumentDefinitions(after: { type: "String" }, first: { type: "Int" }) {
-    posts(after: $after, first: $first) @connection(key: "Chat_posts") {
+  @argumentDefinitions(first: { type: "Int" }, after: { type: "String" }) {
+    posts(first: $first, after: $after) @connection(key: "Chat_posts") {
       edges {
+        cursor
         node {
           id
           ...ChatMessage_post
@@ -83,13 +84,13 @@ export default function Chat({
             </>
           )
         }
-        contentContainerStyle={styles.posts}
         inverted
+        contentContainerStyle={styles.posts}
         keyExtractor={(item) => item?.node.id || ""}
         onEndReached={() => {
           if (hasNext && !paging) {
             setPaging(true);
-            loadNext(10, {
+            loadNext(PagingPosts, {
               onComplete: () => {
                 setPaging(false);
               },

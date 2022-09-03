@@ -67,9 +67,10 @@ export default function ChatCreate({
       return;
     }
     setLoading(true);
-    const connectionId = ConnectionHandler.getConnectionID(
-      "client:root",
-      "Chats_chats"
+    const chatsList = ConnectionHandler.getConnectionID("root", "Chats_chats");
+    const viewerChats = ConnectionHandler.getConnectionID(
+      "root",
+      "ProfileChats__viewerChats"
     );
 
     await new Promise<void>((resolve) => {
@@ -79,7 +80,7 @@ export default function ChatCreate({
             user_id: viewerId,
             title,
           },
-          connections: [connectionId],
+          connections: [chatsList, viewerChats],
         },
         onCompleted({ createChat }) {
           if (createChat.__typename === "ChatCreatedError") {

@@ -1,3 +1,2 @@
-export const PagingChats = 7;
-
-export const PagingPosts = 7;
+export const PagingChats = 10;
+export const PagingPosts = 10;

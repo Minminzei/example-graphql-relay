@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e07ffd1903ba653c1a8a43a6ec59dc96>>
+ * @generated SignedSource<<7661cbc9ce3ac11898141c3825b6fbf2>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -141,6 +141,13 @@ return {
                       {
                         "alias": null,
                         "args": null,
+                        "kind": "ScalarField",
+                        "name": "cursor",
+                        "storageKey": null
+                      },
+                      {
+                        "alias": null,
+                        "args": null,
                         "concreteType": "Post",
                         "kind": "LinkedField",
                         "name": "node",
@@ -189,13 +196,6 @@ return {
                           },
                           (v3/*: any*/)
                         ],
-                        "storageKey": null
-                      },
-                      {
-                        "alias": null,
-                        "args": null,
-                        "kind": "ScalarField",
-                        "name": "cursor",
                         "storageKey": null
                       }
                     ],
@@ -248,16 +248,16 @@ return {
     ]
   },
   "params": {
-    "cacheID": "6a1e48ed1e519980ea255c368f9e811e",
+    "cacheID": "2cda1a86201ddd3c683ddafd632a88f3",
     "id": null,
     "metadata": {},
     "name": "Chat_pagination_query",
     "operationKind": "query",
-    "text": "query Chat_pagination_query(\n  $after: String\n  $first: Int\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...Chat_pagination_2HEEH6\n    id\n  }\n}\n\nfragment ChatMessage_post on Post {\n  id\n  content\n  deletedAt\n  user {\n    id\n    name\n    image\n  }\n}\n\nfragment Chat_pagination_2HEEH6 on Chat {\n  posts(after: $after, first: $first) {\n    edges {\n      node {\n        id\n        ...ChatMessage_post\n        __typename\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
+    "text": "query Chat_pagination_query(\n  $after: String\n  $first: Int\n  $id: ID!\n) {\n  node(id: $id) {\n    __typename\n    ...Chat_pagination_2HEEH6\n    id\n  }\n}\n\nfragment ChatMessage_post on Post {\n  id\n  content\n  deletedAt\n  user {\n    id\n    name\n    image\n  }\n}\n\nfragment Chat_pagination_2HEEH6 on Chat {\n  posts(first: $first, after: $after) {\n    edges {\n      cursor\n      node {\n        id\n        ...ChatMessage_post\n        __typename\n      }\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n    }\n  }\n  id\n}\n"
   }
 };
 })();
 
-(node as any).hash = "87680ce5a40ec15d1a4bcbf760071f4a";
+(node as any).hash = "cf75fab9e85a17ae177ea0ada900c66a";
 
 export default node;

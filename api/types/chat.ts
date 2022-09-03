@@ -40,6 +40,8 @@ const ChatType: GraphQLObjectType = new GraphQLObjectType({
       ): Promise<Connection<PostModel>> {
         return new Promise(async (resolve, reject) => {
           try {
+            console.log("start paginate post", obj);
+            console.log(args);
             const posts = await prisma.post.findMany({
               where: {
                 chat_id: fromGlobalId(obj.id),

@@ -28,13 +28,9 @@ import ChatItem from "@components/organisms/ProfileChat/ProfileChatItem";
 const profileChatsChatList = graphql`
   fragment ProfileChats_list on Query
   @refetchable(queryName: "ProfileChats_list_pagination")
-  @argumentDefinitions(
-    after: { type: "String" }
-    first: { type: "Int!" }
-    user_id: { type: "ID!" }
-  ) {
-    chats(first: $first, after: $after, user_id: $user_id)
-      @connection(key: "ProfileChats_chats") {
+  @argumentDefinitions(after: { type: "String" }, first: { type: "Int!" }) {
+    viewerChats(first: $first, after: $after)
+      @connection(key: "ProfileChats__viewerChats") {
       edges {
         node {
           id
@@ -95,9 +91,10 @@ export default function ProfileChats({
     }
     setLoading(true);
     setRemoveId(null);
-    const connectionId = ConnectionHandler.getConnectionID(
+    const chatsList = ConnectionHandler.getConnectionID("root", "Chats_chats");
+    const viewerChats = ConnectionHandler.getConnectionID(
       "root",
-      "Chats_chats"
+      "ProfileChats__viewerChats"
     );
 
     await new Promise<void>((resolve) => {
@@ -107,7 +104,7 @@ export default function ProfileChats({
             id: removeId,
             user_id: viewerId,
           },
-          connections: [connectionId],
+          connections: [chatsList, viewerChats],
         },
         onCompleted({ removeChat }) {
           if (removeChat.__typename === "RemoveChatError") {
@@ -124,15 +121,6 @@ export default function ProfileChats({
                 mode: "toast",
               })
             );
-            // TODO: チャット一覧 @connection(key: "Chats_chats")からは削除できるが、
-            // プロフィール＞チャット一覧 @connection(key: "ProfileChats_chats") からは削除できないので、refetchする。
-            // 複数のコネクションから、削除する方法は要調査。
-            refetch(
-              { first: PagingChats },
-              {
-                fetchPolicy: "network-only",
-              }
-            );
           }
           resolve();
         },
@@ -144,7 +132,7 @@ export default function ProfileChats({
   return (
     <View style={styles.container}>
       <FlatList
-        data={data.chats?.edges}
+        data={data.viewerChats?.edges}
         renderItem={({ item }) =>
           item?.node ? (
             <ChatItem chatFragment={item.node} onRemove={setRemoveId} />

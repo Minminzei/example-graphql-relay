@@ -1,4 +1,5 @@
 import { GraphQLNonNull, GraphQLID, GraphQLInterfaceType } from "graphql";
+import { ChatModel } from "@api/types/chat";
 
 export default new GraphQLInterfaceType({
   name: "Node",
@@ -6,5 +7,10 @@ export default new GraphQLInterfaceType({
     id: {
       type: new GraphQLNonNull(GraphQLID),
     },
+  },
+  resolveType: (value) => {
+    if (value instanceof ChatModel) {
+      return "Chat";
+    }
   },
 });

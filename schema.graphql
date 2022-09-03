@@ -1,36 +1,35 @@
 type Query {
   node(id: ID!): Node!
-  nodes(
-    """
-    IDs of the objects.
-    """
-    ids: [ID!]!
-  ): [Node]!
   user(id: ID!): User!
   chat(id: ID!): Chat!
   chats(
-    """
-    Returns the items in the list that come after the specified cursor.
-    """
+    """Returns the items in the list that come after the specified cursor."""
     after: String
 
-    """
-    Returns the first n items from the list.
-    """
+    """Returns the first n items from the list."""
     first: Int
 
-    """
-    Returns the items in the list that come before the specified cursor.
-    """
+    """Returns the items in the list that come before the specified cursor."""
     before: String
 
-    """
-    Returns the last n items from the list.
-    """
+    """Returns the last n items from the list."""
     last: Int
     user_id: ID
   ): ChatConnectionConnection!
   viewer: User!
+  viewerChats(
+    """Returns the items in the list that come after the specified cursor."""
+    after: String
+
+    """Returns the first n items from the list."""
+    first: Int
+
+    """Returns the items in the list that come before the specified cursor."""
+    before: String
+
+    """Returns the last n items from the list."""
+    last: Int
+  ): ChatConnectionConnection!
 }
 
 interface Node {
@@ -50,82 +49,50 @@ type Chat implements Node {
   title: String!
   user: User!
   posts(
-    """
-    Returns the items in the list that come after the specified cursor.
-    """
+    """Returns the items in the list that come after the specified cursor."""
     after: String
 
-    """
-    Returns the first n items from the list.
-    """
+    """Returns the first n items from the list."""
     first: Int
 
-    """
-    Returns the items in the list that come before the specified cursor.
-    """
+    """Returns the items in the list that come before the specified cursor."""
     before: String
 
-    """
-    Returns the last n items from the list.
-    """
+    """Returns the last n items from the list."""
     last: Int
   ): PostConnectionConnection
 }
 
-"""
-A connection to a list of items.
-"""
+"""A connection to a list of items."""
 type PostConnectionConnection {
-  """
-  Information to aid in pagination.
-  """
+  """Information to aid in pagination."""
   pageInfo: PageInfo!
 
-  nodes: [Post!]!
-
-  """
-  A list of edges.
-  """
+  """A list of edges."""
   edges: [PostConnectionEdge]
 }
 
-"""
-Information about pagination in a connection.
-"""
+"""Information about pagination in a connection."""
 type PageInfo {
-  """
-  When paginating forwards, are there more items?
-  """
+  """When paginating forwards, are there more items?"""
   hasNextPage: Boolean!
 
-  """
-  When paginating backwards, are there more items?
-  """
+  """When paginating backwards, are there more items?"""
   hasPreviousPage: Boolean!
 
-  """
-  When paginating backwards, the cursor to continue.
-  """
+  """When paginating backwards, the cursor to continue."""
   startCursor: String
 
-  """
-  When paginating forwards, the cursor to continue.
-  """
+  """When paginating forwards, the cursor to continue."""
   endCursor: String
 }
 
-"""
-An edge in a connection.
-"""
+"""An edge in a connection."""
 type PostConnectionEdge {
-  """
-  The item at the end of the edge
-  """
+  """The item at the end of the edge"""
   node: Post!
 
-  """
-  A cursor for use in pagination
-  """
+  """A cursor for use in pagination"""
   cursor: String!
 }
 
@@ -136,33 +103,21 @@ type Post {
   deletedAt: String
 }
 
-"""
-A connection to a list of items.
-"""
+"""A connection to a list of items."""
 type ChatConnectionConnection {
-  """
-  Information to aid in pagination.
-  """
+  """Information to aid in pagination."""
   pageInfo: PageInfo!
 
-  """
-  A list of edges.
-  """
+  """A list of edges."""
   edges: [ChatConnectionEdge]
 }
 
-"""
-An edge in a connection.
-"""
+"""An edge in a connection."""
 type ChatConnectionEdge {
-  """
-  The item at the end of the edge
-  """
+  """The item at the end of the edge"""
   node: Chat!
 
-  """
-  A cursor for use in pagination
-  """
+  """A cursor for use in pagination"""
   cursor: String!
 }
 
