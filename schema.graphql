@@ -142,10 +142,14 @@ input ProfileInput {
   division: String!
 }
 
-union ChatCreatedResult = ChatEdges | ChatCreatedError
+union ChatCreatedResult = ChatEdges | ChatDuplicateNameError | ChatCreatedError
 
 type ChatEdges {
   chatEdges: ChatConnectionEdge
+}
+
+type ChatDuplicateNameError {
+  message: String!
 }
 
 type ChatCreatedError {

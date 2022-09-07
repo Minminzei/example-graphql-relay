@@ -46,7 +46,7 @@ export default function Chats({
   );
 
   return (
-    <View>
+    <View style={styles.container}>
       <FlatList
         data={data.chats.edges}
         renderItem={({ item }) => {
@@ -54,7 +54,7 @@ export default function Chats({
             return null;
           }
           return (
-            <View style={styles.container}>
+            <View style={styles.content}>
               <View style={styles.item}>
                 <Ripple
                   style={styles.avatar}
@@ -118,6 +118,9 @@ export default function Chats({
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  content: {
     borderBottomWidth: 1,
     borderStyle: "solid",
     borderColor: Colors.grayLight,

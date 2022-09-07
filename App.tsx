@@ -6,6 +6,8 @@ import Navigation from "@navigation/index";
 import { RecoilRoot } from "recoil";
 import { RelayEnvironmentProvider } from "react-relay/hooks";
 import RelayEnvironment from "./RelayEnvironment";
+import { View } from "@components/atoms/Themed";
+import Colors from "@constants/Colors";
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
@@ -19,7 +21,9 @@ export default function App() {
         <RecoilRoot>
           <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
-              <Navigation colorScheme={colorScheme} />
+              <View style={styles.content}>
+                <Navigation colorScheme={colorScheme} />
+              </View>
             </SafeAreaView>
           </SafeAreaProvider>
         </RecoilRoot>
@@ -31,5 +35,11 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: "center",
+  },
+  content: {
+    maxWidth: 500,
+    width: "100%",
+    height: "100%",
   },
 });

@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<4c827f696e8e992a37b83d8a77875cf6>>
+ * @generated SignedSource<<e4dce40824828d8516396d079e34b061>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -20,6 +20,9 @@ export type ChatCreateMutation$variables = {
 export type ChatCreateMutation$data = {
   readonly createChat: {
     readonly __typename: "ChatCreatedError";
+    readonly message: string;
+  } | {
+    readonly __typename: "ChatDuplicateNameError";
     readonly message: string;
   } | {
     readonly __typename: "ChatEdges";
@@ -105,17 +108,24 @@ v8 = {
   "name": "image",
   "storageKey": null
 },
-v9 = {
+v9 = [
+  {
+    "alias": null,
+    "args": null,
+    "kind": "ScalarField",
+    "name": "message",
+    "storageKey": null
+  }
+],
+v10 = {
   "kind": "InlineFragment",
-  "selections": [
-    {
-      "alias": null,
-      "args": null,
-      "kind": "ScalarField",
-      "name": "message",
-      "storageKey": null
-    }
-  ],
+  "selections": (v9/*: any*/),
+  "type": "ChatDuplicateNameError",
+  "abstractKey": null
+},
+v11 = {
+  "kind": "InlineFragment",
+  "selections": (v9/*: any*/),
   "type": "ChatCreatedError",
   "abstractKey": null
 };
@@ -183,7 +193,8 @@ return {
             "type": "ChatEdges",
             "abstractKey": null
           },
-          (v9/*: any*/)
+          (v10/*: any*/),
+          (v11/*: any*/)
         ],
         "storageKey": null
       }
@@ -271,23 +282,24 @@ return {
             "type": "ChatEdges",
             "abstractKey": null
           },
-          (v9/*: any*/)
+          (v10/*: any*/),
+          (v11/*: any*/)
         ],
         "storageKey": null
       }
     ]
   },
   "params": {
-    "cacheID": "b898c4b875721b59b468f66321071b41",
+    "cacheID": "217b63101398404f34ee521cca6792ba",
     "id": null,
     "metadata": {},
     "name": "ChatCreateMutation",
     "operationKind": "mutation",
-    "text": "mutation ChatCreateMutation(\n  $input: CreateChatInput!\n) {\n  createChat(input: $input) {\n    __typename\n    ... on ChatEdges {\n      chatEdges {\n        cursor\n        node {\n          id\n          title\n          user {\n            name\n            image\n            id\n          }\n        }\n      }\n    }\n    ... on ChatCreatedError {\n      message\n    }\n  }\n}\n"
+    "text": "mutation ChatCreateMutation(\n  $input: CreateChatInput!\n) {\n  createChat(input: $input) {\n    __typename\n    ... on ChatEdges {\n      chatEdges {\n        cursor\n        node {\n          id\n          title\n          user {\n            name\n            image\n            id\n          }\n        }\n      }\n    }\n    ... on ChatDuplicateNameError {\n      message\n    }\n    ... on ChatCreatedError {\n      message\n    }\n  }\n}\n"
   }
 };
 })();
 
-(node as any).hash = "4b2270551785777ce17efc4135847118";
+(node as any).hash = "776190b04ced85fca7070d8ea81bfc38";
 
 export default node;

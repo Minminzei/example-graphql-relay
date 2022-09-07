@@ -1,7 +1,6 @@
 import React, { Suspense } from "react";
 import { StyleSheet } from "react-native";
 import { View } from "@components/atoms/Themed";
-import { RootStackScreenProps } from "@navigation/types";
 import {
   usePreloadedQuery,
   useQueryLoader,
@@ -12,6 +11,7 @@ import Loading from "@components/atoms/Loading";
 import Header from "@components/atoms/Header";
 import { ChatCreateScreenQuery } from "@generated/ChatCreateScreenQuery.graphql";
 import ChatCreate from "@components/templates/ChatCreate";
+import { goBack } from "@navigation/navigator";
 
 const chatCreateScreenQuery = graphql`
   query ChatCreateScreenQuery {
@@ -23,21 +23,17 @@ const chatCreateScreenQuery = graphql`
 
 function ScreenContent({
   queryReference,
-  move,
 }: {
   queryReference: PreloadedQuery<ChatCreateScreenQuery>;
-  move: (id: string) => void;
 }) {
   const { viewer } = usePreloadedQuery<ChatCreateScreenQuery>(
     chatCreateScreenQuery,
     queryReference
   );
-  return <ChatCreate viewerFragment={viewer} move={move} />;
+  return <ChatCreate viewerFragment={viewer} />;
 }
 
-export default function ChatCreateScreen({
-  navigation,
-}: RootStackScreenProps<"ChatCreate">) {
+export default function ChatCreateScreen() {
   const [queryReference, loadQuery, disposeQuery] =
     useQueryLoader<ChatCreateScreenQuery>(chatCreateScreenQuery);
 
@@ -50,15 +46,10 @@ export default function ChatCreateScreen({
 
   return (
     <View style={styles.container}>
-      <Header title="チャット作成" onBack={() => navigation.goBack()} />
+      <Header title="チャット作成" onBack={goBack} />
       {
         <Suspense fallback={<Loading size="large" />}>
-          {queryReference && (
-            <ScreenContent
-              queryReference={queryReference}
-              move={(id) => navigation.replace("Chat", { id })}
-            />
-          )}
+          {queryReference && <ScreenContent queryReference={queryReference} />}
         </Suspense>
       }
     </View>
