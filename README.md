@@ -19,8 +19,10 @@ https://user-images.githubusercontent.com/3320542/188304766-811d7d6c-4200-4342-9
 1. [Relay のキャッシュ管理](#cache)
 1. [Fragment Colocation](#fragment-colocation)
 1. [エラー UX の設計](#error-ux)
+1. [mutation と connection](#muation-connection)
+1. [relay-style による pagination](#pagination)
 
-<a id="build"></a>
+   <a id="build"></a>
 
 ## 1. 環境構築
 
