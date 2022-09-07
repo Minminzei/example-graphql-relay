@@ -30,37 +30,57 @@ const createChatInput = new GraphQLInputObjectType({
   },
 });
 
-async function create(data: CreateChatInput): Promise<Result> {
-  try {
-    const { id } = await prisma.chat.create({
-      data: {
-        title: data.title,
-        user_id: fromGlobalId(data.user_id),
-      },
-    });
-    const chat = await prisma.chat.findUnique({
-      where: {
-        id,
-      },
-      include: {
-        user: true,
-      },
-    });
-    if (!chat) {
-      throw new Error("チャットを作成できませんでした");
-    }
-
-    return {
-      chatEdges: new ChatEdgeModel({
-        cursor: id,
-        node: new ChatModel(chat),
-      }),
-    };
-  } catch (e: any) {
-    return {
-      message: e.message,
-    };
+class ChatError {
+  code: string;
+  message: string;
+  constructor(params: { code: string; message: string }) {
+    this.code = params.code;
+    this.message = params.message;
   }
+}
+
+async function create(data: CreateChatInput): Promise<Result | ChatError> {
+  // チャット名の重複チェック
+  const check = await prisma.chat.findFirst({
+    where: {
+      title: data.title,
+      deletedAt: null,
+    },
+  });
+  if (check) {
+    return new ChatError({
+      code: "DEPUCICAPE_NAME",
+      message: "このチャット名はすでに使用されています",
+    });
+  }
+
+  const { id } = await prisma.chat.create({
+    data: {
+      title: data.title,
+      user_id: fromGlobalId(data.user_id),
+    },
+  });
+  const chat = await prisma.chat.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      user: true,
+    },
+  });
+  if (!chat) {
+    return new ChatError({
+      code: "FAIL_CRETATE",
+      message: "チャットを作成できませんでした",
+    });
+  }
+
+  return {
+    chatEdges: new ChatEdgeModel({
+      cursor: id,
+      node: new ChatModel(chat),
+    }),
+  };
 }
 
 export default {
@@ -77,6 +97,12 @@ export default {
           },
         }),
         new GraphQLObjectType({
+          name: "ChatDuplicateNameError",
+          fields: {
+            message: { type: new GraphQLNonNull(GraphQLString) },
+          },
+        }),
+        new GraphQLObjectType({
           name: "ChatCreatedError",
           fields: {
             message: { type: new GraphQLNonNull(GraphQLString) },
@@ -86,6 +112,8 @@ export default {
       resolveType: (value) => {
         if (value.chatEdges instanceof ChatEdgeModel) {
           return "ChatEdges";
+        } else if (value.code === "DEPUCICAPE_NAME") {
+          return "ChatDuplicateNameError";
         }
         return "ChatCreatedError";
       },

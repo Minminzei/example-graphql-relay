@@ -8,10 +8,7 @@ import {
   createBottomTabNavigator,
   BottomTabBarProps,
 } from "@react-navigation/bottom-tabs";
-import {
-  createMaterialTopTabNavigator,
-  MaterialTopTabBarProps,
-} from "@react-navigation/material-top-tabs";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import messageData from "@recoil/message";
 import {
   NavigationContainer,
@@ -161,49 +158,6 @@ function ProfileTabNavigator(data: RootTabScreenProps<"Profile">) {
   );
 }
 
-// function TodoTabBar(params: MaterialTopTabBarProps) {
-//   const { state, descriptors, navigation } = params;
-//   return (
-//     <View style={styles.favoriteTabBarViews}>
-//       {state.routes.map((route, index) => {
-//         const { options } = descriptors[route.key];
-//         const isFocused = state.index === index;
-
-//         return (
-//           <Ripple
-//             onPress={() => navigation.navigate(route.name)}
-//             style={[
-//               styles.favoriteTabBarView,
-//               isFocused
-//                 ? {
-//                     borderColor: Colors.black0,
-//                     borderBottomColor: Colors.green,
-//                     borderWidth: 2,
-//                   }
-//                 : null,
-//             ]}
-//             key={`tabbr-${index}`}
-//           >
-//             <Text
-//               style={[
-//                 styles.favoriteTabBarText,
-//                 isFocused
-//                   ? {
-//                       ...Fonts.xlb100,
-//                       color: Colors.green,
-//                     }
-//                   : null,
-//               ]}
-//             >
-//               {options.title}
-//             </Text>
-//           </Ripple>
-//         );
-//       })}
-//     </View>
-//   );
-// }
-
 function TabBar(params: BottomTabBarProps): JSX.Element {
   const { state, descriptors, navigation } = params;
   return (
@@ -212,25 +166,28 @@ function TabBar(params: BottomTabBarProps): JSX.Element {
         const { options } = descriptors[route.key];
         const isFocused = state.index === index;
         return (
-          <Ripple
-            style={styles.menu}
-            onPress={() => navigation.navigate("Root", { screen: route.name })}
-            key={`menu-${route.name}`}
-          >
-            <Icon
-              name={options.tabBarLabel as any}
-              size={40}
-              color={isFocused ? Colors.primary : Colors.black}
-            />
-            <Text
-              style={[
-                styles.label,
-                isFocused ? { color: Colors.primary } : null,
-              ]}
+          <View style={styles.item} key={`menu-${route.name}`}>
+            <Ripple
+              style={styles.menu}
+              onPress={() =>
+                navigation.navigate("Root", { screen: route.name })
+              }
             >
-              {options.title}
-            </Text>
-          </Ripple>
+              <Icon
+                name={options.tabBarLabel as any}
+                size={40}
+                color={isFocused ? Colors.primary : Colors.black}
+              />
+              <Text
+                style={[
+                  styles.label,
+                  isFocused ? { color: Colors.primary } : null,
+                ]}
+              >
+                {options.title}
+              </Text>
+            </Ripple>
+          </View>
         );
       })}
     </View>
@@ -249,9 +206,11 @@ const styles = StyleSheet.create({
     borderColor: Colors.grayLight,
     borderStyle: "solid",
   },
+  item: {
+    flex: 1,
+  },
   menu: {
     flex: 1,
-    height: "100%",
     justifyContent: "center",
     alignItems: "center",
   },

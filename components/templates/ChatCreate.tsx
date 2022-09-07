@@ -15,6 +15,7 @@ import Button from "@components/atoms/Button";
 import { ChatCreateMutation } from "@generated/ChatCreateMutation.graphql";
 import { ChatCreate_viewer$key } from "@generated/ChatCreate_viewer.graphql";
 import message, { MessageData } from "@recoil/message";
+import { replace } from "@navigation/navigator";
 
 const viewerQuery = graphql`
   fragment ChatCreate_viewer on User {
@@ -39,6 +40,9 @@ const chatCreateMutation = graphql`
           }
         }
       }
+      ... on ChatDuplicateNameError {
+        message
+      }
       ... on ChatCreatedError {
         message
       }
@@ -48,10 +52,8 @@ const chatCreateMutation = graphql`
 
 export default function ChatCreate({
   viewerFragment,
-  move,
 }: {
   viewerFragment: ChatCreate_viewer$key;
-  move: (chatId: string) => void;
 }) {
   const [commit] = useMutation<ChatCreateMutation>(chatCreateMutation);
   const { id: viewerId } = useFragment<ChatCreate_viewer$key>(
@@ -83,24 +85,28 @@ export default function ChatCreate({
           connections: [chatsList, viewerChats],
         },
         onCompleted({ createChat }) {
-          if (createChat.__typename === "ChatCreatedError") {
-            setMessage(
-              new MessageData({
-                message: createChat.message,
-                error: true,
-              })
-            );
-            setLoading(false);
-          } else if (createChat.__typename === "ChatEdges") {
+          if (createChat.__typename === "ChatEdges") {
             setMessage(
               new MessageData({
                 message: "チャットを作成しました",
                 mode: "toast",
               })
             );
-            move(createChat.chatEdges?.node.id || "");
+            replace("Chat", { id: createChat.chatEdges!.node.id });
+          } else {
+            setMessage(
+              new MessageData({
+                message:
+                  createChat.__typename === "ChatDuplicateNameError" ||
+                  createChat.__typename === "ChatCreatedError"
+                    ? createChat.message
+                    : "チャットを作成できませんでした",
+                error: true,
+              })
+            );
+            setLoading(false);
+            resolve();
           }
-          resolve();
         },
       });
     });

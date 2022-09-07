@@ -37,10 +37,7 @@ function ScreenContent({
   );
 }
 
-export default function ChatScreen({
-  navigation,
-  route,
-}: RootStackScreenProps<"Chat">) {
+export default function ChatScreen({ route }: RootStackScreenProps<"Chat">) {
   const [queryReference, loadQuery, disposeQuery] =
     useQueryLoader<ChatScreenQuery>(chatScreenQuery);
 

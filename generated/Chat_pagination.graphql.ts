@@ -1,5 +1,5 @@
 /**
- * @generated SignedSource<<e3837210b05d62272e36c614abc57f07>>
+ * @generated SignedSource<<c1c2f280f17521c02225a77944bc94ab>>
  * @lightSyntaxTransform
  * @nogrep
  */
@@ -19,7 +19,7 @@ export type Chat_pagination$data = {
         readonly id: string;
         readonly " $fragmentSpreads": FragmentRefs<"ChatMessage_post">;
       };
-    }>;
+    } | null> | null;
   } | null;
   readonly " $fragmentType": "Chat_pagination";
 };
